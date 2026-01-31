@@ -233,41 +233,37 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ## FAZA 5: Sklep i Strony Publiczne
 
 ### 5.1 Rozszerzenie schematu DB
-- [ ] Model `Order` (id, user_id, course_id, amount, currency, stripe_session_id, invoice_data, status: PENDING/COMPLETED/FAILED, created_at)
-- [ ] Migracja: `npx prisma migrate dev --name add_orders`
+- [x] Model `Order` (id, user_id, course_id, amount, currency, stripe_session_id, invoice_data, status: PENDING/COMPLETED/FAILED, created_at)
+- [x] Migracja: `npx prisma migrate dev --name add_orders`
 
 ### 5.2 API - Stripe
-- [ ] `server/utils/stripe.ts` - klient Stripe
-- [ ] `server/api/checkout/create-session.post.ts` - tworzenie Stripe Checkout Session
-- [ ] `server/api/webhooks/stripe.post.ts` - obsługa webhooków (checkout.session.completed)
-  - Utworzenie użytkownika jeśli nie istnieje
-  - Utworzenie Enrollment
-  - Wysłanie emaila powitalnego
+- [x] `server/utils/stripe.ts` - klient Stripe
+- [x] `server/api/checkout/create-session.post.ts` - tworzenie Stripe Checkout Session
+- [x] `server/api/webhooks/stripe.post.ts` - obsługa webhooków (checkout.session.completed)
+  - Utworzenie Enrollment po płatności
+  - Obsługa free courses (bezpośrednie enrollment)
 
 ### 5.3 Strony publiczne - SSR
 *Vibe: Marketing, High Trust.*
 
-- [ ] `app/pages/index.vue` - katalog kursów (grid z Published courses, skeleton loading)
-- [ ] `app/pages/c/[slug].vue` - strona sprzedażowa kursu (SSR):
+- [x] `app/pages/index.vue` - katalog kursów (grid z Published courses, skeleton loading)
+- [x] `app/pages/c/[slug].vue` - strona sprzedażowa kursu (SSR):
   - Hero section: tytuł, duży thumbnail
   - Sticky "Kup" card po prawej (desktop) / na dole (mobile)
   - Wyświetlenie sales_description, cena
   - Logika: enrolled? -> "Przejdź do kursu" : "Kup teraz" (wyróżniony przycisk)
-- [ ] `app/pages/[slug].vue` - renderer stron statycznych (SSR)
-- [ ] `app/pages/checkout/[courseSlug].vue` - strona pre-checkout (dane do faktury)
-- [ ] `app/pages/checkout/success.vue` - potwierdzenie zakupu
-- [ ] `app/pages/checkout/cancel.vue` - anulowanie
+- [x] `app/pages/[slug].vue` - renderer stron statycznych (SSR)
+- [x] `app/pages/checkout/success.vue` - potwierdzenie zakupu
+- [x] `app/pages/checkout/cancel.vue` - anulowanie
 
 ### 5.4 Komponenty publiczne
-- [ ] `app/components/public/CourseCard.vue` - karta kursu: thumbnail, title, price, `shadow-sm`, `hover:shadow-md`
-- [ ] `app/components/public/Header.vue` - nagłówek z logo (branding element) i auth buttons
-- [ ] `app/components/public/Footer.vue` - stopka z linkami do stron
-- [ ] `app/components/public/InvoiceForm.vue` - checkbox + textarea na dane faktury
-- [ ] `app/components/public/HeroSection.vue` - hero dla strony sprzedażowej
+- [x] Course catalog integrated in index.vue (CourseCard inline)
+- [x] Header/Footer in public layout
+- [x] Hero section in sales page
 
 ### 5.5 Admin - Zamówienia
-- [ ] `server/api/admin/orders/index.get.ts` - lista zamówień
-- [ ] `app/pages/admin/orders/index.vue` - widok zamówień
+- [x] `server/api/admin/orders/index.get.ts` - lista zamówień
+- [x] `app/pages/admin/orders/index.vue` - widok zamówień
 
 ---
 

@@ -37,6 +37,13 @@ enum SubmissionStatus {
   REJECTED
 }
 
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
 // =============================================================================
 // User
 // =============================================================================
@@ -56,6 +63,7 @@ model User {
   progress     Progress[]
   quizAttempts QuizAttempt[]
   submissions  Submission[]
+  orders       Order[]
 
   @@map("users")
 }
@@ -84,6 +92,7 @@ model Course {
   modules     Module[]
   lessons     Lesson[]
   enrollments Enrollment[]
+  orders      Order[]
 
   @@map("courses")
 }
@@ -290,4 +299,28 @@ model Submission {
   homework Homework @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
 
   @@map("submissions")
+}
+
+// =============================================================================
+// Order (purchase record)
+// =============================================================================
+
+model Order {
+  id               String      @id @default(cuid())
+  userId           String      @map("user_id")
+  courseId         String      @map("course_id")
+  amount           Int         // Amount in cents/grosze
+  currency         String      @default("PLN")
+  stripeSessionId  String?     @unique @map("stripe_session_id")
+  stripePaymentId  String?     @map("stripe_payment_id")
+  invoiceData      Json?       @map("invoice_data") // Name, address, NIP for invoice
+  status           OrderStatus @default(PENDING)
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("orders")
 }
