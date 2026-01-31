@@ -17,12 +17,10 @@ if (['login', 'register', 'admin', 'account', 'course', 'checkout', 'c'].include
 const { data, pending, error } = await useFetch(`/api/public/pages/${slug}`)
 
 const page = computed(() => data.value?.page)
-const config = useRuntimeConfig()
-const appName = config.public.appName
 
 // SEO
 useHead(() => ({
-  title: page.value?.title ? `${page.value.title} | ${appName}` : `Strona | ${appName}`,
+  title: page.value?.title || 'Strona',
   meta: [
     { name: 'description', content: page.value?.metaDescription || '' },
   ],
