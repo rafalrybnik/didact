@@ -8,8 +8,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const isPublicRoute = publicRoutes.includes(to.path) ||
     publicPrefixes.some(prefix => to.path.startsWith(prefix))
 
-  // If not logged in, try to fetch user (in case of page refresh)
-  if (!isLoggedIn.value) {
+  // Always fetch user on server-side, or on client if not logged in
+  if (import.meta.server || !isLoggedIn.value) {
     await fetchUser()
   }
 

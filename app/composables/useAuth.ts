@@ -9,18 +9,29 @@ interface User {
   createdAt: string
 }
 
-const user = ref<User | null>(null)
-const isLoading = ref(false)
-
 export function useAuth() {
+  // Use useState for SSR-safe state
+  const user = useState<User | null>('auth-user', () => null)
+  const isLoading = useState<boolean>('auth-loading', () => false)
+
   const isLoggedIn = computed(() => !!user.value)
 
-  async function fetchUser() {
-    if (user.value) return user.value
+  async function fetchUser(force = false) {
+    // Skip if already fetched (unless forced or on server)
+    if (user.value && !force && !import.meta.server) return user.value
 
     isLoading.value = true
     try {
-      const response = await $fetch<{ user: User }>('/api/auth/me')
+      // On server, we need to forward the cookie from the original request
+      const headers: Record<string, string> = {}
+      if (import.meta.server) {
+        const cookie = useRequestHeader('cookie')
+        if (cookie) {
+          headers.cookie = cookie
+        }
+      }
+
+      const response = await $fetch<{ user: User }>('/api/auth/me', { headers })
       user.value = response.user
       return user.value
     } catch {
