@@ -130,7 +130,7 @@ async function addQuestion() {
 
   isAddingQuestion.value = true
   try {
-    await $fetch(`/api/admin/lessons/${props.lessonId}/quiz/questions`, {
+    await $fetch(`/api/admin/quiz-questions/${props.lessonId}`, {
       method: 'POST',
       body: {
         questionText: newQuestion.questionText.trim(),
