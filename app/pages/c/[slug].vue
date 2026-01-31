@@ -30,11 +30,13 @@ function formatPrice(price: number, currency: string): string {
 const expandedModules = ref<Set<string>>(new Set())
 
 function toggleModule(moduleId: string) {
-  if (expandedModules.value.has(moduleId)) {
-    expandedModules.value.delete(moduleId)
+  const newSet = new Set(expandedModules.value)
+  if (newSet.has(moduleId)) {
+    newSet.delete(moduleId)
   } else {
-    expandedModules.value.add(moduleId)
+    newSet.add(moduleId)
   }
+  expandedModules.value = newSet
 }
 
 // Purchase handling
