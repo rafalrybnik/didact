@@ -347,12 +347,12 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 - [ ] Konfiguracja CORS dla storage bucket
 
 #### CI/CD
-- [ ] Railway auto-deploy z GitHub main branch
-- [ ] Konfiguracja "Deploy Command" w Railway: `npx prisma migrate deploy` (uruchamiane przed startem aplikacji)
+- [x] Railway auto-deploy z GitHub main branch
+- [x] Konfiguracja "Deploy Command" w Railway: `npx prisma migrate deploy` (uruchamiane przed startem aplikacji)
 
 #### Dokumentacja
-- [ ] README.md - instrukcja deploymentu na Railway
-- [ ] README.md - instrukcja uruchomienia lokalnego z Docker Compose
+- [x] README.md - instrukcja deploymentu na Railway
+- [x] README.md - instrukcja uruchomienia lokalnego z Docker Compose
 
 ### 7.5 Testy
 - [x] Testy jednostkowe: utils (jwt, password, validators, sanitize, rateLimit)
