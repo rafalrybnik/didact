@@ -161,3 +161,20 @@ model Progress {
   @@unique([userId, lessonId])
   @@map("progress")
 }
+
+// =============================================================================
+// Page (static CMS pages)
+// =============================================================================
+
+model Page {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  contentHtml     String?  @map("content_html") @db.Text
+  metaDescription String?  @map("meta_description")
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("pages")
+}
