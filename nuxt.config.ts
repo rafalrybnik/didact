@@ -8,6 +8,9 @@ export default defineNuxtConfig({
     'nuxt-security',
   ],
 
+  // Global CSS
+  css: ['~/assets/css/main.css'],
+
   runtimeConfig: {
     // Server-side only
     jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-in-production',

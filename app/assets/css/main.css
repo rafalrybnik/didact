@@ -1,0 +1,161 @@
+/* =============================================================================
+   Didact LMS - Global Styles
+   Philosophy: "Content First" - UI recedes to let course content shine
+   Style: "Refined Utility" - professional but not generic
+   ============================================================================= */
+
+/* Google Fonts - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================================================
+   Base Layer - Typography & Defaults
+   ============================================================================= */
+@layer base {
+  html {
+    @apply antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans;
+  }
+
+  /* Headings - generous spacing */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+
+  h4 {
+    @apply text-lg md:text-xl;
+  }
+
+  /* Links */
+  a {
+    @apply text-primary-600 hover:text-primary-700 transition-colors duration-200;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+}
+
+/* =============================================================================
+   Component Layer - Reusable Patterns
+   ============================================================================= */
+@layer components {
+  /* Card base styles */
+  .card {
+    @apply bg-white rounded-lg shadow-card border border-slate-200/60;
+  }
+
+  .card-hover {
+    @apply transition-shadow duration-200 hover:shadow-card-hover;
+  }
+
+  /* Form input base */
+  .input-base {
+    @apply w-full px-3 py-2 border border-slate-300 rounded-lg
+           bg-white text-slate-900 placeholder:text-slate-400
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           transition-all duration-200;
+  }
+
+  /* Button base */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2
+           px-4 py-2 rounded-lg font-medium
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white
+           hover:bg-primary-700
+           active:scale-[0.98]
+           focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-slate-700 border border-slate-300
+           hover:bg-slate-50 hover:border-slate-400
+           active:scale-[0.98]
+           focus:ring-slate-500;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-slate-600
+           hover:bg-slate-100 hover:text-slate-900
+           active:scale-[0.98]
+           focus:ring-slate-500;
+  }
+
+  /* Skeleton loader shimmer */
+  .skeleton {
+    @apply bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200
+           bg-[length:200%_100%] animate-shimmer rounded;
+  }
+
+  /* Badge variants */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-draft {
+    @apply badge bg-slate-100 text-slate-700;
+  }
+
+  .badge-published {
+    @apply badge bg-green-100 text-green-700;
+  }
+
+  .badge-completed {
+    @apply badge bg-primary-100 text-primary-700;
+  }
+
+  .badge-pending {
+    @apply badge bg-amber-100 text-amber-700;
+  }
+}
+
+/* =============================================================================
+   Utility Layer - Custom Utilities
+   ============================================================================= */
+@layer utilities {
+  /* Text balance for headings */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Prose-like max width for content readability */
+  .max-w-prose {
+    max-width: 65ch;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

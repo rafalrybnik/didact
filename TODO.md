@@ -42,17 +42,17 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ### 1.3 Design System - Global Styles
 *Filozofia: "Content First" - UI ustępuje miejsca treści kursu. Styl: "Refined Utility".*
 
-- [ ] `tailwind.config.ts` - rozszerzenie konfiguracji:
+- [x] `tailwind.config.ts` - rozszerzenie konfiguracji:
   - Font: **Inter** lub **Plus Jakarta Sans** (weights: 400, 500, 600)
   - Primary color: Deep Indigo/Teal/Slate (jeden kolor brandowy)
   - Neutrals: Slate/Zinc scale (bez czystej czerni - używać `#0f172a`)
   - Semantic colors: Success (green), Error (red), Warning (amber)
   - Border radius: `rounded-lg` (0.5rem) jako domyślny
-- [ ] `app/assets/css/main.css` - globalne style:
+- [x] `app/assets/css/main.css` - globalne style:
   - Import fontu (Google Fonts lub local)
   - Bazowa typografia (generous whitespace, czytelność)
   - Utility classes dla subtle shadows i borders
-- [ ] Konfiguracja Lucide icons w Nuxt
+- [x] Konfiguracja Lucide icons w Nuxt (via lucide-vue-next package)
 
 ### 1.4 UI Component Library (Base)
 *Zasada "10% Magic" - wyróżniające się elementy tylko w: przycisk "Kup", sidebar playera, logo/header.*
@@ -339,13 +339,13 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
   restartPolicyMaxRetries = 3
   ```
 - [x] Endpoint health check: `server/api/health.get.ts` (zwraca status)
-- [ ] Railway PostgreSQL add-on - konfiguracja DATABASE_URL jako shared variable
-- [ ] Konfiguracja zmiennych środowiskowych w Railway Dashboard:
+- [x] Railway PostgreSQL add-on - konfiguracja DATABASE_URL jako shared variable
+- [x] Konfiguracja zmiennych środowiskowych w Railway Dashboard:
   - `DATABASE_URL` (z PostgreSQL add-on)
   - `JWT_SECRET`
-  - `STRIPE_SECRET_KEY`
-  - `STRIPE_WEBHOOK_SECRET`
-  - `NUXT_PUBLIC_APP_URL` (dla linków w emailach)
+  - `STRIPE_SECRET_KEY` (do dodania później)
+  - `STRIPE_WEBHOOK_SECRET` (do dodania później)
+  - `NUXT_PUBLIC_APP_URL` (do dodania później)
 
 #### Pliki uploadów (thumbnails, homework)
 - [ ] Konfiguracja produkcyjnego storage (Cloudflare R2 lub S3)
