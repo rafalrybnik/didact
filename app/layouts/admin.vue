@@ -28,7 +28,7 @@ const navigation = [
   { name: 'Użytkownicy', href: '/admin/users', icon: Users },
   { name: 'Strony', href: '/admin/pages', icon: FileText },
   { name: 'Zamówienia', href: '/admin/orders', icon: ShoppingCart },
-  { name: 'Wiadomości', href: '/admin/messages', icon: MessageSquare },
+  { name: 'Wiadomości', href: '/messages', icon: MessageSquare },
 ]
 
 function isActive(href: string) {
