@@ -252,6 +252,12 @@ const showPreview = ref(false)
               <li>• Możesz używać nagłówków, list i obrazów</li>
             </ul>
           </UiCard>
+
+          <!-- Quiz Editor -->
+          <AdminQuizEditor :lesson-id="lessonId" />
+
+          <!-- Homework Editor -->
+          <AdminHomeworkEditor :lesson-id="lessonId" />
         </div>
       </div>
     </template>

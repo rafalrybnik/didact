@@ -200,35 +200,33 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ## FAZA 4: Oceny i Zadania
 
 ### 4.1 Rozszerzenie schematu DB
-- [ ] Model `Quiz` (id, lesson_id, passing_score, max_retries)
-- [ ] Model `Question` (id, quiz_id, question_text, options: JSON, correct_option, order)
-- [ ] Model `QuizAttempt` (id, user_id, quiz_id, score, passed, created_at)
-- [ ] Model `Homework` (id, lesson_id, prompt, allow_file, allow_text)
-- [ ] Model `Submission` (id, user_id, homework_id, content_text, file_url, status: PENDING/PASSED/REJECTED, feedback, graded_at)
-- [ ] Migracja: `npx prisma migrate dev --name add_assessments`
+- [x] Model `Quiz` (id, lesson_id, passing_score, max_retries)
+- [x] Model `Question` (id, quiz_id, question_text, options: JSON, correct_option, order)
+- [x] Model `QuizAttempt` (id, user_id, quiz_id, score, passed, created_at)
+- [x] Model `Homework` (id, lesson_id, prompt, allow_file, allow_text)
+- [x] Model `Submission` (id, user_id, homework_id, content_text, file_url, status: PENDING/PASSED/REJECTED, feedback, graded_at)
+- [x] Migracja: `npx prisma migrate dev --name add_assessments`
 
 ### 4.2 API - Quizy
-- [ ] `server/api/admin/lessons/[lessonId]/quiz.post.ts` - tworzenie quizu
-- [ ] `server/api/admin/lessons/[lessonId]/quiz.put.ts` - edycja quizu
-- [ ] `server/api/admin/lessons/[lessonId]/quiz/questions.post.ts` - dodanie pytania
-- [ ] `server/api/courses/[slug]/lessons/[lessonId]/quiz.get.ts` - pobranie quizu (bez odpowiedzi)
-- [ ] `server/api/courses/[slug]/lessons/[lessonId]/quiz/submit.post.ts` - wysłanie odpowiedzi, obliczenie wyniku
+- [x] `server/api/admin/lessons/[lessonId]/quiz.post.ts` - tworzenie quizu
+- [x] `server/api/admin/lessons/[lessonId]/quiz.put.ts` - edycja quizu
+- [x] `server/api/admin/lessons/[lessonId]/quiz/questions.post.ts` - dodanie pytania
+- [x] `server/api/courses/[slug]/lessons/[lessonId]/quiz.get.ts` - pobranie quizu (bez odpowiedzi)
+- [x] `server/api/courses/[slug]/lessons/[lessonId]/quiz/submit.post.ts` - wysłanie odpowiedzi, obliczenie wyniku
 
 ### 4.3 API - Zadania domowe
-- [ ] `server/api/admin/lessons/[lessonId]/homework.post.ts` - tworzenie zadania
-- [ ] `server/api/admin/submissions/index.get.ts` - lista zgłoszeń do oceny
-- [ ] `server/api/admin/submissions/[id].put.ts` - ocena zgłoszenia (PASSED/REJECTED + feedback)
-- [ ] `server/api/courses/[slug]/lessons/[lessonId]/homework/submit.post.ts` - wysłanie zadania (tekst lub plik via storage adapter)
+- [x] `server/api/admin/lessons/[lessonId]/homework.post.ts` - tworzenie zadania
+- [x] `server/api/admin/submissions/index.get.ts` - lista zgłoszeń do oceny
+- [x] `server/api/admin/submissions/[id].put.ts` - ocena zgłoszenia (PASSED/REJECTED + feedback)
+- [x] `server/api/courses/[slug]/lessons/[lessonId]/homework/submit.post.ts` - wysłanie zadania (tekst lub plik via storage adapter)
 
 ### 4.4 UI - Quizy i Zadania
-- [ ] `app/components/course/QuizPlayer.vue` - interfejs rozwiązywania quizu
-- [ ] `app/components/course/QuizResult.vue` - wynik quizu
-- [ ] `app/components/course/HomeworkForm.vue` - formularz zadania (tekst/plik)
-- [ ] `app/components/course/SubmissionStatus.vue` - status zgłoszenia z feedbackiem
-- [ ] `app/pages/admin/submissions/index.vue` - lista zgłoszeń do oceny
-- [ ] `app/pages/admin/submissions/[id].vue` - widok oceniania
-- [ ] `app/components/admin/QuizEditor.vue` - edytor quizu z pytaniami
-- [ ] `app/components/admin/HomeworkEditor.vue` - edytor zadania
+- [x] `app/components/course/QuizPlayer.vue` - interfejs rozwiązywania quizu (includes QuizResult)
+- [x] `app/components/course/HomeworkForm.vue` - formularz zadania (tekst/plik, includes SubmissionStatus)
+- [x] `app/pages/admin/submissions/index.vue` - lista zgłoszeń do oceny
+- [x] `app/pages/admin/submissions/[id].vue` - widok oceniania
+- [x] `app/components/admin/QuizEditor.vue` - edytor quizu z pytaniami
+- [x] `app/components/admin/HomeworkEditor.vue` - edytor zadania
 
 ---
 

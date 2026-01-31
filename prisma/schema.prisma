@@ -31,6 +31,12 @@ enum StructureMode {
   FREESTYLE // Mixed - some lessons in modules, some standalone
 }
 
+enum SubmissionStatus {
+  PENDING
+  PASSED
+  REJECTED
+}
+
 // =============================================================================
 // User
 // =============================================================================
@@ -46,8 +52,10 @@ model User {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  enrollments Enrollment[]
-  progress    Progress[]
+  enrollments  Enrollment[]
+  progress     Progress[]
+  quizAttempts QuizAttempt[]
+  submissions  Submission[]
 
   @@map("users")
 }
@@ -119,6 +127,8 @@ model Lesson {
   course   Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
   module   Module?    @relation(fields: [moduleId], references: [id], onDelete: SetNull)
   progress Progress[]
+  quiz     Quiz?
+  homework Homework?
 
   @@map("lessons")
 }
@@ -177,4 +187,107 @@ model Page {
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@map("pages")
+}
+
+// =============================================================================
+// Quiz (assessment for a lesson)
+// =============================================================================
+
+model Quiz {
+  id           String   @id @default(cuid())
+  lessonId     String   @unique @map("lesson_id")
+  passingScore Int      @default(70) @map("passing_score") // Percentage required to pass
+  maxRetries   Int      @default(3) @map("max_retries") // 0 = unlimited
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  lesson    Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  questions Question[]
+  attempts  QuizAttempt[]
+
+  @@map("quizzes")
+}
+
+// =============================================================================
+// Question (quiz question)
+// =============================================================================
+
+model Question {
+  id            String   @id @default(cuid())
+  quizId        String   @map("quiz_id")
+  questionText  String   @map("question_text") @db.Text
+  options       Json     // Array of option strings
+  correctOption Int      @map("correct_option") // Index of correct option (0-based)
+  order         Int      @default(0)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("questions")
+}
+
+// =============================================================================
+// QuizAttempt (user's attempt at a quiz)
+// =============================================================================
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  quizId    String   @map("quiz_id")
+  score     Int      // Percentage score
+  passed    Boolean
+  answers   Json?    // Array of user's answers (option indices)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_attempts")
+}
+
+// =============================================================================
+// Homework (assignment for a lesson)
+// =============================================================================
+
+model Homework {
+  id        String   @id @default(cuid())
+  lessonId  String   @unique @map("lesson_id")
+  prompt    String   @db.Text
+  allowFile Boolean  @default(true) @map("allow_file")
+  allowText Boolean  @default(true) @map("allow_text")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  lesson      Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
+  @@map("homework")
+}
+
+// =============================================================================
+// Submission (user's homework submission)
+// =============================================================================
+
+model Submission {
+  id          String           @id @default(cuid())
+  userId      String           @map("user_id")
+  homeworkId  String           @map("homework_id")
+  contentText String?          @map("content_text") @db.Text
+  fileUrl     String?          @map("file_url")
+  status      SubmissionStatus @default(PENDING)
+  feedback    String?          @db.Text
+  gradedAt    DateTime?        @map("graded_at")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  homework Homework @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
+
+  @@map("submissions")
 }

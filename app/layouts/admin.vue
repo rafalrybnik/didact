@@ -7,6 +7,7 @@ import {
   FileText,
   ShoppingCart,
   MessageSquare,
+  ClipboardCheck,
   Settings,
   LogOut,
   Menu,
@@ -21,6 +22,7 @@ const isSidebarOpen = ref(false)
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { name: 'Kursy', href: '/admin/courses', icon: BookOpen },
+  { name: 'Zgłoszenia', href: '/admin/submissions', icon: ClipboardCheck },
   { name: 'Użytkownicy', href: '/admin/users', icon: Users },
   { name: 'Strony', href: '/admin/pages', icon: FileText },
   { name: 'Zamówienia', href: '/admin/orders', icon: ShoppingCart },

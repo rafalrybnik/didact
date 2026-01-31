@@ -29,6 +29,23 @@ const navigation = computed(() => lessonData.value?.navigation)
 const course = computed(() => lessonData.value?.course)
 const curriculum = computed(() => curriculumData.value)
 
+// Fetch quiz data (client-side only)
+const { data: quizData, refresh: refreshQuiz } = useLazyFetch(
+  `/api/courses/${slug}/lessons/${lessonId}/quiz`,
+  { server: false }
+)
+
+// Fetch homework data (client-side only)
+const { data: homeworkData, refresh: refreshHomework } = useLazyFetch(
+  `/api/courses/${slug}/lessons/${lessonId}/homework`,
+  { server: false }
+)
+
+const quiz = computed(() => quizData.value?.quiz)
+const quizAttempts = computed(() => quizData.value?.attempts)
+const homework = computed(() => homeworkData.value?.homework)
+const submission = computed(() => homeworkData.value?.submission)
+
 // Mark lesson as complete
 const isMarkingComplete = ref(false)
 
@@ -50,6 +67,18 @@ async function markComplete() {
   } finally {
     isMarkingComplete.value = false
   }
+}
+
+// Handle quiz completion
+async function handleQuizCompleted(passed: boolean) {
+  if (passed) {
+    await Promise.all([refreshLesson(), refreshCurriculum(), refreshQuiz()])
+  }
+}
+
+// Handle homework submission
+async function handleHomeworkSubmitted() {
+  await refreshHomework()
 }
 
 // Mobile sidebar toggle
@@ -143,6 +172,28 @@ const showMobileSidebar = ref(false)
               :video-url="lesson.videoUrl"
               :video-iframe="lesson.videoIframe"
             />
+
+            <!-- Quiz -->
+            <div v-if="quiz && quizAttempts" class="max-w-4xl mx-auto mt-8">
+              <CourseQuizPlayer
+                :quiz="quiz"
+                :attempts="quizAttempts"
+                :course-slug="slug"
+                :lesson-id="lessonId"
+                @completed="handleQuizCompleted"
+              />
+            </div>
+
+            <!-- Homework -->
+            <div v-if="homework" class="max-w-4xl mx-auto mt-8">
+              <CourseHomeworkForm
+                :homework="homework"
+                :submission="submission"
+                :course-slug="slug"
+                :lesson-id="lessonId"
+                @submitted="handleHomeworkSubmitted"
+              />
+            </div>
 
             <CourseLessonNavigation
               v-if="navigation"
