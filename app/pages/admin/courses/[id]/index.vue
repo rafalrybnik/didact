@@ -6,6 +6,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const router = useRouter()
 const { error: showError, success: showSuccess } = useToast()
 
 const courseId = route.params.id as string
@@ -74,6 +75,137 @@ const tabs = [
   { id: 'sales', label: 'Sprzedaż', icon: FileText },
   { id: 'curriculum', label: 'Program', icon: BookOpen },
 ]
+
+// Curriculum management
+const modules = computed(() => {
+  if (!course.value?.modules) return []
+  return course.value.modules.map((m: any) => ({
+    id: m.id,
+    title: m.title,
+    order: m.order,
+    lessons: m.lessons || [],
+  }))
+})
+
+const standaloneLessons = computed(() => {
+  if (!course.value?.lessons) return []
+  return course.value.lessons.filter((l: any) => !l.moduleId)
+})
+
+// Modal states
+const moduleModalOpen = ref(false)
+const lessonModalOpen = ref(false)
+const editingModule = ref<any>(null)
+const editingLesson = ref<any>(null)
+const defaultModuleId = ref<string | null>(null)
+const modalLoading = ref(false)
+
+function handleAddModule() {
+  editingModule.value = null
+  moduleModalOpen.value = true
+}
+
+function handleEditModule(moduleId: string) {
+  const module = modules.value.find(m => m.id === moduleId)
+  if (module) {
+    editingModule.value = module
+    moduleModalOpen.value = true
+  }
+}
+
+async function handleDeleteModule(moduleId: string) {
+  if (!confirm('Czy na pewno chcesz usunąć ten moduł? Lekcje zostaną przeniesione poza moduły.')) {
+    return
+  }
+
+  try {
+    await $fetch(`/api/admin/modules/${moduleId}`, { method: 'DELETE' })
+    showSuccess('Usunięto', 'Moduł został usunięty')
+    refresh()
+  } catch (e: any) {
+    showError('Błąd', e.data?.message || 'Nie udało się usunąć modułu')
+  }
+}
+
+async function handleModuleSubmit(data: { title: string }) {
+  modalLoading.value = true
+  try {
+    if (editingModule.value?.id) {
+      await $fetch(`/api/admin/modules/${editingModule.value.id}`, {
+        method: 'PUT',
+        body: data,
+      })
+      showSuccess('Zapisano', 'Moduł został zaktualizowany')
+    } else {
+      await $fetch('/api/admin/modules', {
+        method: 'POST',
+        body: { ...data, courseId },
+      })
+      showSuccess('Dodano', 'Moduł został dodany')
+    }
+    moduleModalOpen.value = false
+    refresh()
+  } catch (e: any) {
+    showError('Błąd', e.data?.message || 'Nie udało się zapisać modułu')
+  } finally {
+    modalLoading.value = false
+  }
+}
+
+function handleAddLesson(moduleId: string | null) {
+  editingLesson.value = null
+  defaultModuleId.value = moduleId
+  lessonModalOpen.value = true
+}
+
+function handleEditLesson(lessonId: string) {
+  router.push(`/admin/courses/${courseId}/lessons/${lessonId}`)
+}
+
+async function handleDeleteLesson(lessonId: string) {
+  if (!confirm('Czy na pewno chcesz usunąć tę lekcję?')) {
+    return
+  }
+
+  try {
+    await $fetch(`/api/admin/lessons/${lessonId}`, { method: 'DELETE' })
+    showSuccess('Usunięto', 'Lekcja została usunięta')
+    refresh()
+  } catch (e: any) {
+    showError('Błąd', e.data?.message || 'Nie udało się usunąć lekcji')
+  }
+}
+
+async function handleLessonSubmit(data: { title: string; moduleId: string | null }) {
+  modalLoading.value = true
+  try {
+    const { lesson } = await $fetch<{ lesson: { id: string } }>('/api/admin/lessons', {
+      method: 'POST',
+      body: { ...data, courseId },
+    })
+    showSuccess('Dodano', 'Lekcja została dodana')
+    lessonModalOpen.value = false
+    refresh()
+    // Navigate to lesson editor
+    router.push(`/admin/courses/${courseId}/lessons/${lesson.id}`)
+  } catch (e: any) {
+    showError('Błąd', e.data?.message || 'Nie udało się dodać lekcji')
+  } finally {
+    modalLoading.value = false
+  }
+}
+
+async function handleReorder(type: 'module' | 'lesson', items: { id: string; order: number; moduleId?: string | null }[]) {
+  try {
+    await $fetch('/api/admin/courses/reorder', {
+      method: 'POST',
+      body: { courseId, type, items },
+    })
+    refresh()
+  } catch (e: any) {
+    showError('Błąd', e.data?.message || 'Nie udało się zmienić kolejności')
+  }
+}
 </script>
 
 <template>
@@ -254,39 +386,49 @@ const tabs = [
 
       <!-- Curriculum Tab -->
       <UiCard v-else-if="activeTab === 'curriculum'">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-medium text-slate-900">Program kursu</h2>
-        </div>
-
-        <p class="text-slate-500 text-center py-8">
-          Edytor programu kursu zostanie dodany w następnej wersji.
-          <br />
-          Na razie możesz zarządzać modułami i lekcjami przez API.
-        </p>
-
-        <div v-if="course.modules?.length" class="mt-6 space-y-4">
-          <div v-for="module in course.modules" :key="module.id" class="border border-slate-200 rounded-lg p-4">
-            <h3 class="font-medium text-slate-900 mb-2">{{ module.title }}</h3>
-            <div v-if="module.lessons?.length" class="space-y-2 pl-4">
-              <div v-for="lesson in module.lessons" :key="lesson.id" class="flex items-center gap-2 text-sm text-slate-600">
-                <FileText class="h-4 w-4" />
-                {{ lesson.title }}
-              </div>
-            </div>
-            <p v-else class="text-sm text-slate-500 pl-4">Brak lekcji w tym module</p>
-          </div>
-        </div>
-
-        <div v-if="course.lessons?.filter((l: any) => !l.moduleId)?.length" class="mt-4">
-          <h3 class="font-medium text-slate-900 mb-2">Lekcje bez modułu</h3>
-          <div class="space-y-2 pl-4">
-            <div v-for="lesson in course.lessons.filter((l: any) => !l.moduleId)" :key="lesson.id" class="flex items-center gap-2 text-sm text-slate-600">
-              <FileText class="h-4 w-4" />
-              {{ lesson.title }}
-            </div>
-          </div>
-        </div>
+        <AdminCurriculumTree
+          :course-id="courseId"
+          :modules="modules"
+          :standalone-lessons="standaloneLessons"
+          :structure-mode="form.structureMode"
+          @add-module="handleAddModule"
+          @edit-module="handleEditModule"
+          @delete-module="handleDeleteModule"
+          @add-lesson="handleAddLesson"
+          @edit-lesson="handleEditLesson"
+          @delete-lesson="handleDeleteLesson"
+          @reorder="handleReorder"
+        />
       </UiCard>
     </template>
+
+    <!-- Module Modal -->
+    <UiModal
+      :open="moduleModalOpen"
+      :title="editingModule?.id ? 'Edytuj moduł' : 'Dodaj moduł'"
+      @close="moduleModalOpen = false"
+    >
+      <AdminModuleForm
+        :module="editingModule"
+        :loading="modalLoading"
+        @submit="handleModuleSubmit"
+        @cancel="moduleModalOpen = false"
+      />
+    </UiModal>
+
+    <!-- Lesson Modal -->
+    <UiModal
+      :open="lessonModalOpen"
+      :title="'Dodaj lekcję'"
+      @close="lessonModalOpen = false"
+    >
+      <AdminLessonForm
+        :modules="modules"
+        :default-module-id="defaultModuleId"
+        :loading="modalLoading"
+        @submit="handleLessonSubmit"
+        @cancel="lessonModalOpen = false"
+      />
+    </UiModal>
   </div>
 </template>
