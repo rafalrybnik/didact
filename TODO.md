@@ -105,32 +105,33 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ## FAZA 2: Panel Admina i CMS
 
 ### 2.1 Rozszerzenie schematu DB
-- [ ] Model `Page` (id, title, slug, content_html, meta_description, published, created_at)
-- [ ] Migracja: `npx prisma migrate dev --name add_pages`
+- [x] Model `Page` (id, title, slug, content_html, meta_description, published, created_at)
+- [x] Migracja: `npx prisma migrate dev --name add_pages`
 
 ### 2.2 API - Kursy (CRUD)
-- [ ] `server/api/admin/courses/index.get.ts` - lista kursów
-- [ ] `server/api/admin/courses/index.post.ts` - tworzenie kursu (Zod)
-- [ ] `server/api/admin/courses/[id].get.ts` - szczegóły kursu
-- [ ] `server/api/admin/courses/[id].put.ts` - aktualizacja kursu
-- [ ] `server/api/admin/courses/[id].delete.ts` - usunięcie kursu
+- [x] `server/api/admin/courses/index.get.ts` - lista kursów
+- [x] `server/api/admin/courses/index.post.ts` - tworzenie kursu (Zod)
+- [x] `server/api/admin/courses/[id].get.ts` - szczegóły kursu
+- [x] `server/api/admin/courses/[id].put.ts` - aktualizacja kursu
+- [x] `server/api/admin/courses/[id].delete.ts` - usunięcie kursu
 
 ### 2.3 API - Moduły i Lekcje (CRUD)
-- [ ] `server/api/admin/courses/[courseId]/modules/index.post.ts` - dodanie modułu
-- [ ] `server/api/admin/courses/[courseId]/modules/[id].put.ts` - edycja modułu
-- [ ] `server/api/admin/courses/[courseId]/modules/[id].delete.ts` - usunięcie modułu
-- [ ] `server/api/admin/courses/[courseId]/lessons/index.post.ts` - dodanie lekcji
-- [ ] `server/api/admin/courses/[courseId]/lessons/[id].get.ts` - szczegóły lekcji
-- [ ] `server/api/admin/courses/[courseId]/lessons/[id].put.ts` - edycja lekcji
-- [ ] `server/api/admin/courses/[courseId]/lessons/[id].delete.ts` - usunięcie lekcji
-- [ ] `server/api/admin/courses/[courseId]/reorder.post.ts` - zmiana kolejności lekcji/modułów
+*Note: Restructured to flat API due to Nuxt routing issues with nested dynamic routes*
+- [x] `server/api/admin/modules/index.post.ts` - dodanie modułu (courseId w body)
+- [x] `server/api/admin/modules/[id].put.ts` - edycja modułu
+- [x] `server/api/admin/modules/[id].delete.ts` - usunięcie modułu
+- [x] `server/api/admin/lessons/index.post.ts` - dodanie lekcji (courseId w body)
+- [x] `server/api/admin/lessons/[id].get.ts` - szczegóły lekcji
+- [x] `server/api/admin/lessons/[id].put.ts` - edycja lekcji
+- [x] `server/api/admin/lessons/[id].delete.ts` - usunięcie lekcji
+- [x] `server/api/admin/courses/reorder.post.ts` - zmiana kolejności lekcji/modułów
 
 ### 2.4 API - Strony statyczne (CRUD)
-- [ ] `server/api/admin/pages/index.get.ts` - lista stron
-- [ ] `server/api/admin/pages/index.post.ts` - tworzenie strony
-- [ ] `server/api/admin/pages/[id].get.ts` - szczegóły strony
-- [ ] `server/api/admin/pages/[id].put.ts` - aktualizacja strony
-- [ ] `server/api/admin/pages/[id].delete.ts` - usunięcie strony
+- [x] `server/api/admin/pages/index.get.ts` - lista stron
+- [x] `server/api/admin/pages/index.post.ts` - tworzenie strony
+- [x] `server/api/admin/pages/[id].get.ts` - szczegóły strony
+- [x] `server/api/admin/pages/[id].put.ts` - aktualizacja strony
+- [x] `server/api/admin/pages/[id].delete.ts` - usunięcie strony
 
 ### 2.5 Panel Admina - UI
 *Vibe: Dense data, Control. Data tables, metrics cards.*
