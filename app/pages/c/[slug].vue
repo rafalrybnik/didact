@@ -161,9 +161,11 @@ useHead(() => ({
                 </div>
 
                 <!-- CTA Button -->
-                <UiButton
-                  variant="primary"
-                  class="w-full justify-center text-lg py-3"
+                <button
+                  class="w-full flex items-center justify-center gap-2 text-lg py-3 px-6 rounded-lg font-medium transition-all disabled:opacity-50"
+                  :class="isEnrolled
+                    ? 'bg-green-600 hover:bg-green-700 text-white'
+                    : 'bg-primary-600 hover:bg-primary-700 text-white'"
                   :disabled="isPurchasing"
                   @click="handlePurchase"
                 >
@@ -179,7 +181,7 @@ useHead(() => ({
                     <ShoppingCart class="w-5 h-5" />
                     {{ isPurchasing ? 'Przekierowanie...' : 'Kup teraz' }}
                   </template>
-                </UiButton>
+                </button>
 
                 <!-- Already enrolled message -->
                 <p v-if="isEnrolled" class="text-sm text-green-600 text-center mt-3 flex items-center justify-center gap-1">
@@ -223,13 +225,29 @@ useHead(() => ({
                       <span class="font-medium text-slate-900">{{ module.title }}</span>
                     </div>
                     <div class="flex items-center gap-3 text-sm text-slate-500">
-                      <span>{{ module.lessonsCount }} lekcji</span>
+                      <span>{{ module.lessons?.length || 0 }} lekcji</span>
                       <component
                         :is="expandedModules.has(module.id) ? ChevronUp : ChevronDown"
                         class="w-5 h-5"
                       />
                     </div>
                   </button>
+                  <!-- Lessons list -->
+                  <div
+                    v-if="expandedModules.has(module.id) && module.lessons?.length"
+                    class="bg-slate-50 px-4 py-2"
+                  >
+                    <ul class="space-y-1">
+                      <li
+                        v-for="lesson in module.lessons"
+                        :key="lesson.id"
+                        class="flex items-center gap-3 py-2 px-3 text-sm text-slate-600"
+                      >
+                        <Play class="w-4 h-4 text-slate-400" />
+                        {{ lesson.title }}
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -248,8 +266,11 @@ useHead(() => ({
               {{ formatPrice(course.price, course.currency) }}
             </span>
           </div>
-          <UiButton
-            variant="primary"
+          <button
+            class="flex items-center justify-center gap-2 py-2 px-6 rounded-lg font-medium transition-all disabled:opacity-50"
+            :class="isEnrolled
+              ? 'bg-green-600 hover:bg-green-700 text-white'
+              : 'bg-primary-600 hover:bg-primary-700 text-white'"
             :disabled="isPurchasing"
             @click="handlePurchase"
           >
@@ -263,7 +284,7 @@ useHead(() => ({
             <template v-else>
               {{ isPurchasing ? 'Przekierowanie...' : 'Kup teraz' }}
             </template>
-          </UiButton>
+          </button>
         </div>
       </div>
 

@@ -19,8 +19,12 @@ export default defineEventHandler(async (event) => {
         select: {
           id: true,
           title: true,
-          _count: {
-            select: { lessons: true },
+          lessons: {
+            orderBy: { order: 'asc' },
+            select: {
+              id: true,
+              title: true,
+            },
           },
         },
       },
@@ -76,7 +80,7 @@ export default defineEventHandler(async (event) => {
       modules: course.modules.map(m => ({
         id: m.id,
         title: m.title,
-        lessonsCount: m._count.lessons,
+        lessons: m.lessons,
       })),
     },
     isEnrolled,
