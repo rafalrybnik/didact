@@ -270,33 +270,29 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ## FAZA 6: Społeczność
 
 ### 6.1 Rozszerzenie schematu DB
-- [ ] Model `Post` (id, course_id, user_id, content, image_url, created_at)
-- [ ] Model `Comment` (id, post_id, user_id, content, created_at)
-- [ ] Model `Thread` (id, user_id, admin_id, created_at)
-- [ ] Model `Message` (id, thread_id, sender_id, content, created_at)
-- [ ] Migracja: `npx prisma migrate dev --name add_community`
+- [x] Model `Post` (id, course_id, user_id, content, image_url, created_at)
+- [x] Model `Comment` (id, post_id, user_id, content, created_at)
+- [x] Model `Thread` (id, user_id, admin_id, created_at)
+- [x] Model `Message` (id, thread_id, sender_id, content, created_at)
+- [x] Migracja: `npx prisma migrate dev --name add_community`
 
 ### 6.2 API - Feed kursu
-- [ ] `server/api/courses/[slug]/feed/index.get.ts` - lista postów
-- [ ] `server/api/courses/[slug]/feed/index.post.ts` - dodanie posta
-- [ ] `server/api/courses/[slug]/feed/[postId]/comments.get.ts` - komentarze
-- [ ] `server/api/courses/[slug]/feed/[postId]/comments.post.ts` - dodanie komentarza
-- [ ] `server/api/admin/feed/[postId].delete.ts` - usunięcie posta (admin)
+- [x] `server/api/courses/[slug]/feed/index.get.ts` - lista postów
+- [x] `server/api/courses/[slug]/feed/index.post.ts` - dodanie posta
+- [x] `server/api/courses/[slug]/feed/[postId]/comments.get.ts` - komentarze
+- [x] `server/api/courses/[slug]/feed/[postId]/comments.post.ts` - dodanie komentarza
+- [x] `server/api/admin/feed/[postId].delete.ts` - usunięcie posta (admin)
 
 ### 6.3 API - Wiadomości prywatne
-- [ ] `server/api/messages/threads/index.get.ts` - lista wątków użytkownika
-- [ ] `server/api/messages/threads/index.post.ts` - utworzenie wątku (student -> admin)
-- [ ] `server/api/messages/threads/[threadId].get.ts` - wiadomości w wątku
-- [ ] `server/api/messages/threads/[threadId].post.ts` - wysłanie wiadomości
+- [x] `server/api/messages/threads/index.get.ts` - lista wątków użytkownika
+- [x] `server/api/messages/threads/index.post.ts` - utworzenie wątku (student -> admin)
+- [x] `server/api/messages/threads/[threadId].get.ts` - wiadomości w wątku
+- [x] `server/api/messages/threads/[threadId].post.ts` - wysłanie wiadomości
 
 ### 6.4 UI - Społeczność
-- [ ] `app/components/course/CourseFeed.vue` - feed z postami
-- [ ] `app/components/course/PostCard.vue` - pojedynczy post z komentarzami
-- [ ] `app/components/course/PostForm.vue` - formularz dodawania posta
-- [ ] `app/components/course/CommentForm.vue` - formularz komentarza
-- [ ] `app/pages/messages/index.vue` - inbox (lista wątków)
-- [ ] `app/pages/messages/[threadId].vue` - widok konwersacji
-- [ ] `app/pages/admin/messages/index.vue` - inbox admina
+- [x] `app/components/course/CourseFeed.vue` - feed z postami (includes PostCard, PostForm, CommentForm)
+- [x] `app/pages/messages/index.vue` - inbox (lista wątków, works for both students and admin)
+- [x] `app/pages/messages/[threadId].vue` - widok konwersacji
 
 ---
 

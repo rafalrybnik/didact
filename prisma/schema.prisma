@@ -59,11 +59,16 @@ model User {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  enrollments  Enrollment[]
-  progress     Progress[]
-  quizAttempts QuizAttempt[]
-  submissions  Submission[]
-  orders       Order[]
+  enrollments   Enrollment[]
+  progress      Progress[]
+  quizAttempts  QuizAttempt[]
+  submissions   Submission[]
+  orders        Order[]
+  posts         Post[]
+  comments      Comment[]
+  threads       Thread[]       @relation("UserThreads")
+  adminThreads  Thread[]       @relation("AdminThreads")
+  messages      Message[]
 
   @@map("users")
 }
@@ -93,6 +98,7 @@ model Course {
   lessons     Lesson[]
   enrollments Enrollment[]
   orders      Order[]
+  posts       Post[]
 
   @@map("courses")
 }
@@ -323,4 +329,83 @@ model Order {
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@map("orders")
+}
+
+// =============================================================================
+// Post (course feed post)
+// =============================================================================
+
+model Post {
+  id        String   @id @default(cuid())
+  courseId  String   @map("course_id")
+  userId    String   @map("user_id")
+  content   String   @db.Text
+  imageUrl  String?  @map("image_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  course   Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments Comment[]
+
+  @@map("posts")
+}
+
+// =============================================================================
+// Comment (comment on a post)
+// =============================================================================
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String   @map("post_id")
+  userId    String   @map("user_id")
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+// =============================================================================
+// Thread (private message thread)
+// =============================================================================
+
+model Thread {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  adminId   String?  @map("admin_id") // Admin assigned to this thread
+  subject   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user     User      @relation("UserThreads", fields: [userId], references: [id], onDelete: Cascade)
+  admin    User?     @relation("AdminThreads", fields: [adminId], references: [id], onDelete: SetNull)
+  messages Message[]
+
+  @@map("threads")
+}
+
+// =============================================================================
+// Message (private message in a thread)
+// =============================================================================
+
+model Message {
+  id        String   @id @default(cuid())
+  threadId  String   @map("thread_id")
+  senderId  String   @map("sender_id")
+  content   String   @db.Text
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
 }
