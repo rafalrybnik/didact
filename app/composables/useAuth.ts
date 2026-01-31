@@ -1,4 +1,4 @@
-import type { Role } from '@prisma/client'
+type Role = 'ADMIN' | 'STUDENT'
 
 interface User {
   id: string

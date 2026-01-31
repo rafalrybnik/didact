@@ -1,7 +1,7 @@
 import { z } from 'zod'
-import { prisma } from '~/server/utils/prisma'
-import { comparePassword } from '~/server/utils/password'
-import { signToken } from '~/server/utils/jwt'
+import { prisma } from '~~/server/utils/prisma'
+import { comparePassword } from '~~/server/utils/password'
+import { signToken } from '~~/server/utils/jwt'
 
 const loginSchema = z.object({
   email: z.string().email('Nieprawidłowy adres email'),

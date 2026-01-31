@@ -1,4 +1,4 @@
-import { verifyToken, type JwtPayload } from '~/server/utils/jwt'
+import { verifyToken, type JwtPayload } from '~~/server/utils/jwt'
 
 // Extend H3Event to include auth context
 declare module 'h3' {

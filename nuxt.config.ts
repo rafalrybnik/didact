@@ -3,6 +3,12 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
 
+  // Use app/ directory structure
+  srcDir: 'app/',
+
+  // Explicitly set server directory (project root)
+  serverDir: 'server/',
+
   modules: [
     '@nuxtjs/tailwindcss',
     'nuxt-security',
