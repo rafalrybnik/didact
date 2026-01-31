@@ -87,18 +87,18 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 - [x] `server/middleware/auth.ts` - middleware weryfikujący JWT dla chronionych route'ów
 
 ### 1.7 Layouty i podstawowa struktura stron
-- [ ] `app/layouts/default.vue` - bazowy layout
-- [ ] `app/layouts/public.vue` - layout publiczny (header z logo/auth, footer)
-- [ ] `app/layouts/admin.vue` - layout admina (sidebar z nawigacją)
-- [ ] `app/layouts/app.vue` - layout studenta (uproszczony header)
-- [ ] `app/pages/index.vue` - placeholder strony głównej
-- [ ] `app/pages/login.vue` - strona logowania
-- [ ] `app/pages/register.vue` - strona rejestracji
-- [ ] `app/middleware/auth.global.ts` - Nuxt middleware chroniący /admin i /course
+- [x] `app/layouts/default.vue` - bazowy layout
+- [x] `app/layouts/public.vue` - layout publiczny (header z logo/auth, footer)
+- [x] `app/layouts/admin.vue` - layout admina (sidebar z nawigacją)
+- [x] `app/layouts/app.vue` - layout studenta (uproszczony header)
+- [x] `app/pages/index.vue` - placeholder strony głównej
+- [x] `app/pages/login.vue` - strona logowania
+- [x] `app/pages/register.vue` - strona rejestracji
+- [x] `app/middleware/auth.global.ts` - Nuxt middleware chroniący /admin i /course
 
 ### 1.8 Composables bazowe
-- [ ] `app/composables/useAuth.ts` - stan autentykacji, login(), logout(), user ref
-- [ ] `app/composables/useApi.ts` - wrapper na $fetch z obsługą błędów
+- [x] `app/composables/useAuth.ts` - stan autentykacji, login(), logout(), user ref
+- [x] `app/composables/useApi.ts` - wrapper na $fetch z obsługą błędów (not needed - using $fetch directly)
 
 ---
 
