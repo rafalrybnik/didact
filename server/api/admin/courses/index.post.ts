@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
+import { sanitizeHtml } from '~~/server/utils/sanitize'
 
 const createCourseSchema = z.object({
   title: z.string().min(1, 'Tytuł jest wymagany'),
@@ -38,8 +39,14 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // Sanitize HTML content
+  const data = {
+    ...result.data,
+    salesDescription: result.data.salesDescription ? sanitizeHtml(result.data.salesDescription) : undefined,
+  }
+
   const course = await prisma.course.create({
-    data: result.data,
+    data,
   })
 
   return { course }

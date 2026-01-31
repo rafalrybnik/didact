@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
+import { sanitizeHtml } from '~~/server/utils/sanitize'
 
 const updateCourseSchema = z.object({
   title: z.string().min(1, 'Tytuł jest wymagany').optional(),
@@ -61,9 +62,17 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Sanitize HTML content if provided
+  const data = {
+    ...result.data,
+    ...(result.data.salesDescription !== undefined && {
+      salesDescription: result.data.salesDescription ? sanitizeHtml(result.data.salesDescription) : null,
+    }),
+  }
+
   const course = await prisma.course.update({
     where: { id },
-    data: result.data,
+    data,
   })
 
   return { course }

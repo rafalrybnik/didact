@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
+import { sanitizeHtml, sanitizeVideoIframe } from '~~/server/utils/sanitize'
 
 const createLessonSchema = z.object({
   courseId: z.string().min(1, 'ID kursu jest wymagane'),
@@ -22,7 +23,11 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const { courseId, moduleId, title, contentHtml, videoUrl, videoIframe, order: providedOrder } = result.data
+  const { courseId, moduleId, title, order: providedOrder } = result.data
+  // Sanitize HTML content
+  const contentHtml = result.data.contentHtml ? sanitizeHtml(result.data.contentHtml) : null
+  const videoUrl = result.data.videoUrl || null
+  const videoIframe = result.data.videoIframe ? sanitizeVideoIframe(result.data.videoIframe) : null
 
   // Check if course exists
   const course = await prisma.course.findUnique({

@@ -299,17 +299,17 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ## FAZA 7: Dopracowanie i Wdrożenie
 
 ### 7.1 Internacjonalizacja (i18n)
-- [ ] Utworzenie `lang/pl.json` z wszystkimi stringami UI
-- [ ] `app/composables/useI18n.ts` - prosty composable do tłumaczeń
-- [ ] Przegląd i ekstrakcja hardcodowanych tekstów z komponentów
+- [x] Utworzenie `lang/pl.json` z wszystkimi stringami UI
+- [x] `app/composables/useI18n.ts` - prosty composable do tłumaczeń
+- [ ] Przegląd i ekstrakcja hardcodowanych tekstów z komponentów (future improvement)
 
 ### 7.2 Bezpieczeństwo
-- [ ] Audyt wszystkich endpointów - walidacja Zod
-- [ ] Sanityzacja HTML (sales_description, content_html) - DOMPurify
-- [ ] Sanityzacja iframe video
-- [ ] Rate limiting na auth endpoints
-- [ ] Walidacja rozszerzeń i rozmiaru plików (homework, thumbnails)
-- [ ] CSRF protection
+- [x] Audyt wszystkich endpointów - walidacja Zod
+- [x] Sanityzacja HTML (sales_description, content_html) - DOMPurify
+- [x] Sanityzacja iframe video
+- [x] Rate limiting na auth endpoints
+- [x] Walidacja rozszerzeń i rozmiaru plików (homework, thumbnails)
+- [ ] CSRF protection (Nuxt built-in via nuxt-security module)
 
 ### 7.3 Email
 - [ ] `server/utils/email.ts` - klient email (Resend/Nodemailer)
@@ -355,8 +355,8 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 - [ ] README.md - instrukcja uruchomienia lokalnego z Docker Compose
 
 ### 7.5 Testy
-- [ ] Testy jednostkowe: utils (jwt, password, validators)
-- [ ] Testy API: auth, courses CRUD
+- [x] Testy jednostkowe: utils (jwt, password, validators, sanitize, rateLimit)
+- [x] Testy API: auth, courses CRUD (basic tests in tests/auth.test.ts)
 - [ ] Testy E2E: podstawowy flow zakupu (opcjonalnie Playwright)
 
 ---

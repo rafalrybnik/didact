@@ -2,13 +2,27 @@ import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
 import { comparePassword } from '~~/server/utils/password'
 import { signToken } from '~~/server/utils/jwt'
+import { createAuthRateLimiter } from '~~/server/utils/rateLimit'
 
 const loginSchema = z.object({
   email: z.string().email('Nieprawidłowy adres email'),
   password: z.string().min(1, 'Hasło jest wymagane'),
 })
 
+const rateLimiter = createAuthRateLimiter()
+
 export default defineEventHandler(async (event) => {
+  // Rate limiting
+  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+  const rateLimit = rateLimiter.check(ip)
+
+  if (!rateLimit.allowed) {
+    throw createError({
+      statusCode: 429,
+      message: 'Zbyt wiele prób logowania. Spróbuj ponownie za chwilę.',
+    })
+  }
+
   const body = await readBody(event)
 
   // Validate input

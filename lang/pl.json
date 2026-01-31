@@ -1,0 +1,143 @@
+{
+  "common": {
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "create": "Utwórz",
+    "add": "Dodaj",
+    "close": "Zamknij",
+    "back": "Wróć",
+    "next": "Dalej",
+    "previous": "Wstecz",
+    "loading": "Ładowanie...",
+    "error": "Błąd",
+    "success": "Sukces",
+    "confirm": "Potwierdź",
+    "yes": "Tak",
+    "no": "Nie",
+    "search": "Szukaj",
+    "noResults": "Brak wyników"
+  },
+  "auth": {
+    "login": "Zaloguj się",
+    "logout": "Wyloguj",
+    "register": "Zarejestruj się",
+    "email": "Email",
+    "password": "Hasło",
+    "name": "Imię",
+    "loginTitle": "Logowanie",
+    "registerTitle": "Rejestracja",
+    "noAccount": "Nie masz konta?",
+    "haveAccount": "Masz już konto?",
+    "loginSuccess": "Logowanie zakończone sukcesem",
+    "registerSuccess": "Rejestracja zakończona sukcesem",
+    "invalidCredentials": "Nieprawidłowy email lub hasło",
+    "emailExists": "Użytkownik z tym adresem email już istnieje"
+  },
+  "nav": {
+    "home": "Strona główna",
+    "courses": "Kursy",
+    "myCourses": "Moje kursy",
+    "messages": "Wiadomości",
+    "settings": "Ustawienia",
+    "admin": "Panel admina"
+  },
+  "course": {
+    "title": "Tytuł",
+    "description": "Opis",
+    "price": "Cena",
+    "free": "Darmowy",
+    "buy": "Kup teraz",
+    "enroll": "Zapisz się",
+    "goToCourse": "Przejdź do kursu",
+    "modules": "Moduły",
+    "lessons": "Lekcje",
+    "progress": "Postęp",
+    "completed": "Ukończone",
+    "markComplete": "Oznacz jako ukończone",
+    "previousLesson": "Poprzednia lekcja",
+    "nextLesson": "Następna lekcja",
+    "curriculum": "Program kursu",
+    "draft": "Szkic",
+    "published": "Opublikowany",
+    "archived": "Zarchiwizowany"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "question": "Pytanie",
+    "questions": "Pytania",
+    "answer": "Odpowiedź",
+    "submit": "Wyślij odpowiedzi",
+    "result": "Wynik",
+    "passed": "Zaliczony",
+    "failed": "Niezaliczony",
+    "retryIn": "Spróbuj ponownie za",
+    "tryAgain": "Spróbuj ponownie",
+    "attemptsLeft": "Pozostałe próby",
+    "noAttemptsLeft": "Brak pozostałych prób"
+  },
+  "homework": {
+    "title": "Zadanie domowe",
+    "submit": "Wyślij zadanie",
+    "yourAnswer": "Twoja odpowiedź",
+    "attachFile": "Dołącz plik",
+    "pending": "Oczekuje na ocenę",
+    "passed": "Zaliczone",
+    "rejected": "Do poprawy",
+    "feedback": "Komentarz prowadzącego"
+  },
+  "messages": {
+    "title": "Wiadomości",
+    "newMessage": "Nowa wiadomość",
+    "noMessages": "Brak wiadomości",
+    "send": "Wyślij",
+    "subject": "Temat",
+    "noSubject": "Bez tematu",
+    "startConversation": "Rozpocznij nową rozmowę"
+  },
+  "feed": {
+    "title": "Aktualności",
+    "writePost": "Napisz post...",
+    "post": "Opublikuj",
+    "comments": "Komentarze",
+    "writeComment": "Napisz komentarz...",
+    "noComments": "Brak komentarzy",
+    "noPosts": "Brak postów"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "courses": "Kursy",
+    "pages": "Strony",
+    "users": "Użytkownicy",
+    "orders": "Zamówienia",
+    "submissions": "Zgłoszenia",
+    "settings": "Ustawienia",
+    "totalRevenue": "Całkowity przychód",
+    "totalStudents": "Liczba studentów",
+    "totalCourses": "Liczba kursów",
+    "recentOrders": "Ostatnie zamówienia"
+  },
+  "checkout": {
+    "success": "Dziękujemy za zakup!",
+    "successMessage": "Twój zakup został zrealizowany pomyślnie.",
+    "cancel": "Płatność anulowana",
+    "cancelMessage": "Twoja płatność została anulowana."
+  },
+  "errors": {
+    "notFound": "Nie znaleziono",
+    "unauthorized": "Brak autoryzacji",
+    "forbidden": "Brak dostępu",
+    "serverError": "Błąd serwera",
+    "networkError": "Błąd połączenia",
+    "rateLimited": "Zbyt wiele prób. Spróbuj ponownie za chwilę.",
+    "validationError": "Błąd walidacji"
+  },
+  "validation": {
+    "required": "To pole jest wymagane",
+    "email": "Nieprawidłowy adres email",
+    "minLength": "Minimalna długość: {min} znaków",
+    "maxLength": "Maksymalna długość: {max} znaków",
+    "passwordMin": "Hasło musi mieć minimum 8 znaków"
+  }
+}

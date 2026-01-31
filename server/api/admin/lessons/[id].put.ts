@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
+import { sanitizeHtml, sanitizeVideoIframe } from '~~/server/utils/sanitize'
 
 const updateLessonSchema = z.object({
   title: z.string().min(1, 'Tytuł jest wymagany').optional(),
@@ -56,9 +57,20 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Sanitize HTML content
+  const data = {
+    ...result.data,
+    ...(result.data.contentHtml !== undefined && {
+      contentHtml: result.data.contentHtml ? sanitizeHtml(result.data.contentHtml) : null,
+    }),
+    ...(result.data.videoIframe !== undefined && {
+      videoIframe: result.data.videoIframe ? sanitizeVideoIframe(result.data.videoIframe) : null,
+    }),
+  }
+
   const lesson = await prisma.lesson.update({
     where: { id },
-    data: result.data,
+    data,
   })
 
   return { lesson }

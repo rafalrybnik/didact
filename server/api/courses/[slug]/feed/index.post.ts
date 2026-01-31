@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
+import { sanitizeHtml } from '~~/server/utils/sanitize'
 
 const createPostSchema = z.object({
   content: z.string().min(1, 'Treść jest wymagana').max(5000),

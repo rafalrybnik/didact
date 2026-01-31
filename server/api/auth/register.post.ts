@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
 import { hashPassword } from '~~/server/utils/password'
 import { signToken } from '~~/server/utils/jwt'
+import { createAuthRateLimiter } from '~~/server/utils/rateLimit'
 
 const registerSchema = z.object({
   email: z.string().email('Nieprawidłowy adres email'),
@@ -9,7 +10,20 @@ const registerSchema = z.object({
   name: z.string().min(2, 'Imię musi mieć minimum 2 znaki').optional(),
 })
 
+const rateLimiter = createAuthRateLimiter()
+
 export default defineEventHandler(async (event) => {
+  // Rate limiting
+  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+  const rateLimit = rateLimiter.check(ip)
+
+  if (!rateLimit.allowed) {
+    throw createError({
+      statusCode: 429,
+      message: 'Zbyt wiele prób rejestracji. Spróbuj ponownie za chwilę.',
+    })
+  }
+
   const body = await readBody(event)
 
   // Validate input

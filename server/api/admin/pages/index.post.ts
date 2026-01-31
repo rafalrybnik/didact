@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
+import { sanitizeHtml } from '~~/server/utils/sanitize'
 
 const createPageSchema = z.object({
   title: z.string().min(1, 'Tytuł jest wymagany'),
@@ -32,8 +33,14 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // Sanitize HTML content
+  const data = {
+    ...result.data,
+    contentHtml: result.data.contentHtml ? sanitizeHtml(result.data.contentHtml) : null,
+  }
+
   const page = await prisma.page.create({
-    data: result.data,
+    data,
   })
 
   return { page }
