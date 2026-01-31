@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GraduationCap, User, LogOut } from 'lucide-vue-next'
+import { GraduationCap, User, LogOut, Settings } from 'lucide-vue-next'
 
 const { user, logout } = useAuth()
 
@@ -28,6 +28,10 @@ async function handleLogout() {
             <NuxtLink to="/account" class="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900">
               <User class="h-4 w-4" />
               Moje kursy
+            </NuxtLink>
+            <NuxtLink to="/account/settings" class="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900">
+              <Settings class="h-4 w-4" />
+              Ustawienia
             </NuxtLink>
             <button
               class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700"

@@ -170,29 +170,30 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ## FAZA 3: Doświadczenie Studenta
 
 ### 3.1 API - Kurs dla studenta
-- [ ] `server/api/courses/[slug].get.ts` - szczegóły kursu (sprawdzenie enrollmentu)
-- [ ] `server/api/courses/[slug]/curriculum.get.ts` - struktura kursu z postępem
-- [ ] `server/api/courses/[slug]/lessons/[lessonId].get.ts` - treść lekcji (sprawdzenie dostępu)
-- [ ] `server/api/courses/[slug]/lessons/[lessonId]/complete.post.ts` - oznacz jako ukończoną
+- [x] `server/api/courses/[slug].get.ts` - szczegóły kursu (sprawdzenie enrollmentu)
+- [x] `server/api/courses/[slug]/curriculum.get.ts` - struktura kursu z postępem
+- [x] `server/api/courses/[slug]/lessons/[lessonId].get.ts` - treść lekcji (sprawdzenie dostępu)
+- [x] `server/api/courses/[slug]/lessons/[lessonId]/complete.post.ts` - oznacz jako ukończoną
 
 ### 3.2 Player kursu - UI
 *Vibe: Focus, Distraction-free. Sidebar ciemniejsza/muted, main area paper-like.*
 
-- [ ] `app/pages/course/[slug]/index.vue` - widok główny kursu (redirect do pierwszej lekcji)
-- [ ] `app/pages/course/[slug]/[lessonId].vue` - widok lekcji (layout: sidebar + main)
-- [ ] `app/components/course/CourseSidebar.vue` - darker/muted bg, current lesson highlighted, ikony statusu (Lucide)
-- [ ] `app/components/course/LessonContent.vue` - white paper-like bg, `max-w-prose` dla czytelności
-- [ ] `app/components/course/VideoEmbed.vue` - 16:9 aspect ratio, rounded corners, sanityzacja iframe
-- [ ] `app/components/course/LessonNavigation.vue` - przyciski Poprzednia/Następna
-- [ ] `app/components/course/ProgressBar.vue` - pasek postępu kursu
+- [x] `app/pages/course/[slug]/index.vue` - widok główny kursu (redirect do pierwszej lekcji)
+- [x] `app/pages/course/[slug]/[lessonId].vue` - widok lekcji (layout: sidebar + main)
+- [x] `app/components/course/CourseSidebar.vue` - darker/muted bg, current lesson highlighted, ikony statusu (Lucide)
+- [x] `app/components/course/LessonContent.vue` - white paper-like bg, `max-w-prose` dla czytelności
+- [x] `app/components/course/VideoEmbed.vue` - 16:9 aspect ratio, rounded corners, sanityzacja iframe
+- [x] `app/components/course/LessonNavigation.vue` - przyciski Poprzednia/Następna
+- [x] `app/components/course/ProgressBar.vue` - pasek postępu kursu
 
 ### 3.3 Composables studenta
-- [ ] `app/composables/useCourseProgress.ts` - zarządzanie postępem, unlocking lekcji
-- [ ] `app/composables/useCourse.ts` - pobieranie danych kursu
+- [x] `app/composables/useCourseProgress.ts` - zarządzanie postępem, unlocking lekcji (inline in pages)
+- [x] `app/composables/useCourse.ts` - pobieranie danych kursu (inline in pages)
 
 ### 3.4 Konto użytkownika
-- [ ] `app/pages/account/index.vue` - lista zakupionych kursów
-- [ ] `app/pages/account/settings.vue` - edycja profilu (imię, avatar)
+- [x] `app/pages/account/index.vue` - lista zakupionych kursów
+- [x] `app/pages/account/settings.vue` - edycja profilu (imię, avatar)
+- [x] `server/api/account/profile.put.ts` - API aktualizacji profilu
 
 ---
 
