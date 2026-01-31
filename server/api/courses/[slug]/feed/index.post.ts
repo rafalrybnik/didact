@@ -1,10 +1,11 @@
 import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
 import { sanitizeHtml } from '~~/server/utils/sanitize'
+import { optionalUrl } from '~~/server/utils/validation'
 
 const createPostSchema = z.object({
   content: z.string().min(1, 'Treść jest wymagana').max(5000),
-  imageUrl: z.string().url().optional(),
+  imageUrl: optionalUrl,
 })
 
 export default defineEventHandler(async (event) => {

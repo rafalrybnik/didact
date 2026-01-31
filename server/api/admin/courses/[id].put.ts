@@ -1,13 +1,14 @@
 import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
 import { sanitizeHtml } from '~~/server/utils/sanitize'
+import { optionalUrl } from '~~/server/utils/validation'
 
 const updateCourseSchema = z.object({
   title: z.string().min(1, 'Tytuł jest wymagany').optional(),
   slug: z.string().min(1).regex(/^[a-z0-9-]+$/, 'Slug może zawierać tylko małe litery, cyfry i myślniki').optional(),
   description: z.string().optional().nullable(),
   salesDescription: z.string().optional().nullable(),
-  thumbnailUrl: z.string().url().optional().nullable(),
+  thumbnailUrl: optionalUrl,
   price: z.number().int().min(0).optional(),
   currency: z.string().optional(),
   structureMode: z.enum(['MODULAR', 'FLAT', 'FREESTYLE']).optional(),

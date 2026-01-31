@@ -1,15 +1,13 @@
 import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
 import { sanitizeHtml, sanitizeVideoIframe } from '~~/server/utils/sanitize'
+import { optionalUrl } from '~~/server/utils/validation'
 
 const updateLessonSchema = z.object({
   title: z.string().min(1, 'Tytuł jest wymagany').optional(),
   moduleId: z.string().optional().nullable(),
   contentHtml: z.string().optional().nullable(),
-  videoUrl: z.string().refine(
-    (val) => !val || val.startsWith('http://') || val.startsWith('https://'),
-    { message: 'Nieprawidłowy URL' }
-  ).optional().nullable(),
+  videoUrl: optionalUrl,
   videoIframe: z.string().optional().nullable(),
   order: z.number().int().min(0).optional(),
 })
