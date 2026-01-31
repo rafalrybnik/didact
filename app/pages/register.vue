@@ -10,6 +10,13 @@ const { register } = useAuth()
 const { error: showError, success: showSuccess } = useToast()
 const config = useRuntimeConfig()
 const appName = config.public.appName
+const route = useRoute()
+
+// Get redirect URL from query param, default to /account
+const redirectUrl = computed(() => {
+  const redirect = route.query.redirect as string
+  return redirect || '/account'
+})
 
 const form = reactive({
   name: '',
@@ -39,7 +46,7 @@ async function handleSubmit() {
   try {
     await register(form.email, form.password, form.name)
     showSuccess('Konto utworzone', 'Rejestracja zakończona sukcesem!')
-    navigateTo('/')
+    navigateTo(redirectUrl.value)
   } catch (e: any) {
     error.value = e.data?.message || 'Wystąpił błąd podczas rejestracji'
     showError('Błąd rejestracji', error.value)

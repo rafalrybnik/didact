@@ -10,6 +10,13 @@ const { login } = useAuth()
 const { error: showError } = useToast()
 const config = useRuntimeConfig()
 const appName = config.public.appName
+const route = useRoute()
+
+// Get redirect URL from query param, default to /account
+const redirectUrl = computed(() => {
+  const redirect = route.query.redirect as string
+  return redirect || '/account'
+})
 
 const form = reactive({
   email: '',
@@ -25,7 +32,7 @@ async function handleSubmit() {
 
   try {
     await login(form.email, form.password)
-    navigateTo('/')
+    navigateTo(redirectUrl.value)
   } catch (e: any) {
     error.value = e.data?.message || 'Wystąpił błąd podczas logowania'
     showError('Błąd logowania', error.value)
