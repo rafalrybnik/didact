@@ -1,13 +1,14 @@
 # Functional Requirements Specification (FRS)
 
 **Project Name:** Simple Single-Tenant LMS
-**Version:** 1.0
+**Version:** 1.1
 **Status:** DRAFT
-**Dependencies:** PRD v1.0
+**Dependencies:** PRD v1.1
 
 ## 1. Actors & Roles
 * **ADMIN (Creator):** Full access to system configuration, course creation, user management, and financial overview.
 * **STUDENT:** Access to purchased courses, profile management, and communication with the Admin.
+* **GUEST (Visitor):** Unregistered user browsing the public catalog, sales pages, and static content.
 * **SYSTEM:** Automated background processes (cron jobs, webhooks).
 
 ---
@@ -32,12 +33,16 @@
 
 ### 2.2 Course Management (Admin Side)
 
-**REQ-010: Create/Edit Course**
-* **Description:** Admin creates a course entity.
+**REQ-010: Create/Edit Course (General & Sales Data)**
+* **Description:** Admin creates a course entity and manages its public presentation.
 * **Acceptance Criteria:**
     * Admin selects structure mode: `Modular`, `Flat List`, or `Freestyle`.
     * Admin sets "Publication Status": `Draft`, `Published`, `Archived`.
     * Admin sets price (currency hardcoded to PLN for MVP or selectable).
+    * **Sales Data Inputs:**
+        * **Sales Description:** Separate Rich Text editor for the public landing page.
+        * **Thumbnail:** URL field or Image Upload for course cover.
+        * **Slug:** URL-friendly identifier (e.g., `my-super-course`).
 
 **REQ-011: Content Management (Curriculum)**
 * **Description:** Adding lessons/materials to the course.
@@ -60,7 +65,7 @@
 ### 2.3 Learning Experience (Student Side)
 
 **REQ-020: Course Player Interface**
-* **Description:** The main view where students consume content.
+* **Description:** The main view where students consume content (Private view).
 * **Acceptance Criteria:**
     * Sidebar (or Drawer): Shows curriculum tree with progress indicators (Locked, Completed, In Progress).
     * Main Content Area: Renders the lesson content.
@@ -121,9 +126,9 @@
 ### 2.6 Payments & Orders
 
 **REQ-050: Checkout Integration**
-* **Description:** Handling purchase intent.
+* **Description:** Handling purchase intent from Public Landing Page.
 * **Acceptance Criteria:**
-    * "Buy Now" button redirects to Stripe Checkout Session.
+    * "Buy Now" button on Landing Page redirects to Stripe Checkout Session.
     * Metadata passed to Stripe: `course_id`, `user_id` (if logged in).
 
 **REQ-051: Invoice Data Capture**
@@ -136,18 +141,45 @@
 
 ---
 
+### 2.7 Public Frontend & CMS (NEW)
+
+**REQ-060: Public Course Catalog**
+* **Description:** The homepage (or /courses) displaying available products.
+* **Acceptance Criteria:**
+    * Grid view of courses where `Status = Published`.
+    * Each card shows: Thumbnail, Title, Price, Short Description (excerpt), "Details" button.
+    * Performance: SSR rendered for SEO optimization (Nuxt 3).
+
+**REQ-061: Course Landing Page (Sales Page)**
+* **Description:** Detailed view of a specific course (accessible to Guest and Student).
+* **Acceptance Criteria:**
+    * URL structure: `/c/{slug}`.
+    * Content: Renders `Sales Description` (HTML/Rich Text), Thumbnail, Price.
+    * **Button Logic:**
+        * IF User is NOT Enrolled (or Guest) -> Show "Buy Now" (Trigger REQ-050).
+        * IF User is Enrolled -> Show "Go to Course" (Redirect to REQ-020).
+
+**REQ-062: Generic Page Management**
+* **Description:** Admin capability to create arbitrary information pages.
+* **Acceptance Criteria:**
+    * Admin Panel: CRUD for Pages. Fields: `Title`, `Slug`, `Content` (WYSIWYG), `Meta Description`.
+    * Public View: Renders content at `/{slug}` (e.g., `/about-us`).
+    * Navigation: Links to these pages are automatically or manually added to the Footer.
+
+---
+
 ## 3. Non-Functional Requirements
 
 **NFR-001: Internationalization (i18n)**
 * Architecture must support language separation.
-* All UI labels must be stored in translation files (e.g., `.json`, `.po`, or `.php` arrays), NOT hardcoded in templates.
+* All UI labels must be stored in translation files (e.g., `.json`), NOT hardcoded in templates.
 * Default file: `pl.json` (or equivalent).
 
 **NFR-002: Security**
 * Passwords hashed (Argon2 or Bcrypt).
-* Video embeds sanitized (prevent XSS from malicious iframes if Admin account is compromised, though Admin is trusted).
-* File uploads (Homework) restricted by extension (e.g., no .exe, .php).
+* Video embeds sanitized.
+* File uploads (Homework/Images) restricted by extension and size.
 
-**NFR-003: Performance**
-* Page load time < 2s on standard 4G.
-* Database optimized for read-heavy operations (Students reading content).
+**NFR-003: Performance & SEO**
+* Public pages (Catalog, Landing, CMS) MUST use Server-Side Rendering (SSR).
+* Page load time < 2s.
