@@ -57,13 +57,13 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ### 1.4 UI Component Library (Base)
 *Zasada "10% Magic" - wyróżniające się elementy tylko w: przycisk "Kup", sidebar playera, logo/header.*
 
-- [ ] `app/components/ui/Button.vue` - Primary (brand color), Secondary (outline/ghost), active state (scale 98%)
-- [ ] `app/components/ui/Input.vue` - subtle border, clear focus state
-- [ ] `app/components/ui/Card.vue` - white bg, `shadow-sm`, `hover:shadow-md` lift effect
-- [ ] `app/components/ui/Badge.vue` - statusy: Draft, Published, Completed, Pending
-- [ ] `app/components/ui/Skeleton.vue` - shimmer loader (zamiast spinnerów)
-- [ ] `app/components/ui/Toast.vue` - notifications dla akcji ("Zapisano", "Błąd")
-- [ ] `app/composables/useToast.ts` - zarządzanie toastami
+- [x] `app/components/ui/Button.vue` - Primary (brand color), Secondary (outline/ghost), active state (scale 98%)
+- [x] `app/components/ui/Input.vue` - subtle border, clear focus state
+- [x] `app/components/ui/Card.vue` - white bg, `shadow-sm`, `hover:shadow-md` lift effect
+- [x] `app/components/ui/Badge.vue` - statusy: Draft, Published, Completed, Pending
+- [x] `app/components/ui/Skeleton.vue` - shimmer loader (zamiast spinnerów)
+- [x] `app/components/ui/Toast.vue` - notifications dla akcji ("Zapisano", "Błąd")
+- [x] `app/composables/useToast.ts` - zarządzanie toastami
 
 ### 1.5 Baza danych - Prisma Schema
 - [x] Inicjalizacja Prisma: `npx prisma init`
