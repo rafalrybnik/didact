@@ -136,20 +136,20 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ### 2.5 Panel Admina - UI
 *Vibe: Dense data, Control. Data tables, metrics cards.*
 
-- [ ] `app/pages/admin/index.vue` - dashboard:
+- [x] `app/pages/admin/index.vue` - dashboard:
   - Metrics cards (Total Revenue, Students, Courses) z subtle shadows
   - Skeleton loaders podczas ładowania danych
-- [ ] `app/pages/admin/courses/index.vue` - lista kursów z akcjami, status badges
-- [ ] `app/pages/admin/courses/new.vue` - formularz tworzenia kursu
-- [ ] `app/pages/admin/courses/[id]/index.vue` - edycja kursu (tabs: Ogólne, Sales, Curriculum)
-- [ ] `app/pages/admin/courses/[id]/curriculum.vue` - zarządzanie modułami/lekcjami
+- [x] `app/pages/admin/courses/index.vue` - lista kursów z akcjami, status badges
+- [x] `app/pages/admin/courses/new.vue` - formularz tworzenia kursu
+- [x] `app/pages/admin/courses/[id]/index.vue` - edycja kursu (tabs: Ogólne, Sales, Curriculum)
+- [ ] `app/pages/admin/courses/[id]/curriculum.vue` - zarządzanie modułami/lekcjami (drag&drop)
 - [ ] `app/pages/admin/courses/[id]/lessons/[lessonId].vue` - edytor lekcji
-- [ ] `app/pages/admin/pages/index.vue` - lista stron statycznych
-- [ ] `app/pages/admin/pages/new.vue` - tworzenie strony
-- [ ] `app/pages/admin/pages/[id].vue` - edycja strony
+- [x] `app/pages/admin/pages/index.vue` - lista stron statycznych
+- [x] `app/pages/admin/pages/new.vue` - tworzenie strony
+- [x] `app/pages/admin/pages/[id].vue` - edycja strony
 - [ ] `app/pages/admin/users/index.vue` - data table użytkowników
-- [ ] `app/components/admin/DataTable.vue` - reusable table component
-- [ ] `app/components/admin/MetricCard.vue` - karta statystyki
+- [x] `app/components/admin/DataTable.vue` - reusable table component
+- [x] `app/components/admin/MetricCard.vue` - karta statystyki
 
 ### 2.6 Storage dla plików
 - [ ] `server/utils/storage.ts` - adapter storage (interfejs dla lokalnego dev i zewnętrznego prod). **WAŻNE:** Ścisły interfejs (upload, delete, getPublicUrl), żadnych bezpośrednich operacji `fs` w kontrolerach.
