@@ -11,28 +11,27 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ## FAZA 1: Fundament (Infrastruktura)
 
 ### 1.1 Inicjalizacja projektu
-- [ ] `npx nuxi init didact` - utworzenie projektu Nuxt 3
-- [ ] Instalacja zależności: `@nuxtjs/tailwindcss`, `prisma`, `@prisma/client`, `zod`, `jsonwebtoken`, `bcrypt`, `lucide-vue-next`, `nuxt-security`
-- [ ] Konfiguracja `nuxt.config.ts`:
+- [x] `npx nuxi init didact` - utworzenie projektu Nuxt 3
+- [x] Instalacja zależności: `@nuxtjs/tailwindcss`, `prisma`, `@prisma/client`, `zod`, `jsonwebtoken`, `bcrypt`, `lucide-vue-next`, `nuxt-security`
+- [x] Konfiguracja `nuxt.config.ts`:
   - Moduły (`tailwindcss`, `nuxt-security`)
   - runtimeConfig dla JWT_SECRET, STRIPE_KEY, DATABASE_URL
   - Nitro preset: `node-server`
   - Host: `0.0.0.0`, Port: `process.env.PORT || 3000` (Railway requirement)
-- [ ] Setup Vitest (konfiguracja środowiska testowego)
+- [x] Setup Vitest (konfiguracja środowiska testowego)
 
 ### 1.2 Docker - Środowisko lokalne i produkcyjne
-- [ ] `Dockerfile` (multi-stage build):
+- [x] `Dockerfile` (multi-stage build):
   - Stage 1: `node:20-alpine` - instalacja dependencies + build
   - Stage 2: `node:20-alpine` - tylko produkcyjne pliki + `node .output/server/index.mjs`
   - Prisma generate w buildzie
   - **WAŻNE:** Migracje (`prisma migrate deploy`) NIE mogą być w buildzie. Będą uruchamiane jako Railway Deploy Command.
-- [ ] `docker-compose.yml` (dev):
-  - Serwis `app` - aplikacja Nuxt z hot-reload (volume mount)
-  - Serwis `db` - PostgreSQL 15
+- [x] `docker-compose.yml` (dev):
+  - Serwis `db` - PostgreSQL 16
   - Network dla komunikacji między serwisami
-- [ ] `docker-compose.prod.yml` - wersja produkcyjna do testów lokalnych
-- [ ] `.dockerignore` (node_modules, .nuxt, .output, .git)
-- [ ] `.env.example` z wymaganymi zmiennymi:
+- [x] `docker-compose.prod.yml` - wersja produkcyjna do testów lokalnych
+- [x] `.dockerignore` (node_modules, .nuxt, .output, .git)
+- [x] `.env.example` z wymaganymi zmiennymi:
   ```
   DATABASE_URL=postgresql://user:pass@localhost:5432/didact
   JWT_SECRET=your-secret-key
@@ -339,7 +338,7 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
   restartPolicyType = "on_failure"
   restartPolicyMaxRetries = 3
   ```
-- [ ] Endpoint health check: `server/api/health.get.ts` (zwraca status DB connection)
+- [x] Endpoint health check: `server/api/health.get.ts` (zwraca status)
 - [ ] Railway PostgreSQL add-on - konfiguracja DATABASE_URL jako shared variable
 - [ ] Konfiguracja zmiennych środowiskowych w Railway Dashboard:
   - `DATABASE_URL` (z PostgreSQL add-on)
