@@ -142,8 +142,8 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 - [x] `app/pages/admin/courses/index.vue` - lista kursów z akcjami, status badges
 - [x] `app/pages/admin/courses/new.vue` - formularz tworzenia kursu
 - [x] `app/pages/admin/courses/[id]/index.vue` - edycja kursu (tabs: Ogólne, Sales, Curriculum)
-- [ ] `app/pages/admin/courses/[id]/curriculum.vue` - zarządzanie modułami/lekcjami (drag&drop)
-- [ ] `app/pages/admin/courses/[id]/lessons/[lessonId].vue` - edytor lekcji
+- [x] `app/pages/admin/courses/[id]/index.vue` - curriculum tab z zarządzaniem modułami/lekcjami (drag&drop) - zintegrowane w index
+- [x] `app/pages/admin/courses/[id]/lessons/[lessonId].vue` - edytor lekcji z video embed (YouTube/Vimeo)
 - [x] `app/pages/admin/pages/index.vue` - lista stron statycznych
 - [x] `app/pages/admin/pages/new.vue` - tworzenie strony
 - [x] `app/pages/admin/pages/[id].vue` - edycja strony
@@ -158,9 +158,9 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 
 ### 2.7 Komponenty edytora
 - [ ] `app/components/admin/RichTextEditor.vue` - WYSIWYG (TipTap lub podobny)
-- [ ] `app/components/admin/CourseForm.vue` - formularz kursu
-- [ ] `app/components/admin/LessonForm.vue` - formularz lekcji
-- [ ] `app/components/admin/CurriculumTree.vue` - drzewo modułów/lekcji z drag&drop
+- [x] `app/components/admin/ModuleForm.vue` - formularz modułu (modal)
+- [x] `app/components/admin/LessonForm.vue` - formularz lekcji (modal)
+- [x] `app/components/admin/CurriculumTree.vue` - drzewo modułów/lekcji z drag&drop (sortable)
 - [ ] `app/components/admin/ImageUploader.vue` - upload miniaturek (via storage adapter)
 
 ---
