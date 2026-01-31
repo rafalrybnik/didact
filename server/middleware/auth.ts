@@ -8,21 +8,16 @@ declare module 'h3' {
 }
 
 export default defineEventHandler((event) => {
-  // Only apply to protected routes
   const url = getRequestURL(event)
   const path = url.pathname
 
-  // Skip auth check for public routes
-  if (
-    path.startsWith('/api/auth/') ||
-    path === '/api/health' ||
-    path.startsWith('/api/public/')
-  ) {
+  // Skip completely for auth routes to avoid circular issues
+  if (path.startsWith('/api/auth/') || path === '/api/health') {
     return
   }
 
-  // Skip auth check for admin routes - they have their own protection
-  // This middleware just adds auth context
+  // Try to extract auth token for all routes (including public)
+  // This allows public routes to optionally use auth context
   const token = getCookie(event, 'auth_token')
 
   if (token) {

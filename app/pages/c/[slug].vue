@@ -8,7 +8,10 @@ definePageMeta({
 const route = useRoute()
 const slug = route.params.slug as string
 
-const { data, pending, error } = await useFetch(`/api/public/courses/${slug}`)
+// Pass cookies during SSR to get correct isEnrolled status
+const { data, pending, error } = await useFetch(`/api/public/courses/${slug}`, {
+  headers: useRequestHeaders(['cookie']),
+})
 
 const course = computed(() => data.value?.course)
 const isEnrolled = computed(() => data.value?.isEnrolled)
@@ -162,34 +165,42 @@ useHead(() => ({
                   </span>
                 </div>
 
-                <!-- CTA Button -->
-                <button
-                  class="w-full flex items-center justify-center gap-2 text-lg py-3 px-6 rounded-lg font-medium transition-all disabled:opacity-50"
-                  :class="isEnrolled
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'bg-primary-600 hover:bg-primary-700 text-white'"
-                  :disabled="isPurchasing"
-                  @click="handlePurchase"
-                >
-                  <template v-if="isEnrolled">
-                    <Play class="w-5 h-5" />
-                    Przejdź do kursu
+                <!-- CTA Button - ClientOnly to avoid SSR hydration mismatch -->
+                <ClientOnly>
+                  <UiButton
+                    :variant="isEnrolled ? 'success' : 'primary'"
+                    size="lg"
+                    class="w-full"
+                    :disabled="isPurchasing"
+                    @click="handlePurchase"
+                  >
+                    <template v-if="isEnrolled">
+                      <Play class="w-5 h-5" />
+                      Przejdź do kursu
+                    </template>
+                    <template v-else-if="course.price === 0">
+                      <CheckCircle class="w-5 h-5" />
+                      {{ isPurchasing ? 'Zapisywanie...' : 'Zapisz się bezpłatnie' }}
+                    </template>
+                    <template v-else>
+                      <ShoppingCart class="w-5 h-5" />
+                      {{ isPurchasing ? 'Przekierowanie...' : 'Kup teraz' }}
+                    </template>
+                  </UiButton>
+                  <template #fallback>
+                    <UiButton variant="primary" size="lg" class="w-full" disabled>
+                      <span class="animate-pulse">Ładowanie...</span>
+                    </UiButton>
                   </template>
-                  <template v-else-if="course.price === 0">
-                    <CheckCircle class="w-5 h-5" />
-                    {{ isPurchasing ? 'Zapisywanie...' : 'Zapisz się bezpłatnie' }}
-                  </template>
-                  <template v-else>
-                    <ShoppingCart class="w-5 h-5" />
-                    {{ isPurchasing ? 'Przekierowanie...' : 'Kup teraz' }}
-                  </template>
-                </button>
+                </ClientOnly>
 
                 <!-- Already enrolled message -->
-                <p v-if="isEnrolled" class="text-sm text-green-600 text-center mt-3 flex items-center justify-center gap-1">
-                  <CheckCircle class="w-4 h-4" />
-                  Masz dostęp do tego kursu
-                </p>
+                <ClientOnly>
+                  <p v-if="isEnrolled" class="text-sm text-green-600 text-center mt-3 flex items-center justify-center gap-1">
+                    <CheckCircle class="w-4 h-4" />
+                    Masz dostęp do tego kursu
+                  </p>
+                </ClientOnly>
               </div>
             </div>
           </div>
@@ -268,25 +279,27 @@ useHead(() => ({
               {{ formatPrice(course.price, course.currency) }}
             </span>
           </div>
-          <button
-            class="flex items-center justify-center gap-2 py-2 px-6 rounded-lg font-medium transition-all disabled:opacity-50"
-            :class="isEnrolled
-              ? 'bg-green-600 hover:bg-green-700 text-white'
-              : 'bg-primary-600 hover:bg-primary-700 text-white'"
-            :disabled="isPurchasing"
-            @click="handlePurchase"
-          >
-            <template v-if="isEnrolled">
-              <Play class="w-4 h-4" />
-              Przejdź do kursu
+          <ClientOnly>
+            <UiButton
+              :variant="isEnrolled ? 'success' : 'primary'"
+              :disabled="isPurchasing"
+              @click="handlePurchase"
+            >
+              <template v-if="isEnrolled">
+                <Play class="w-4 h-4" />
+                Przejdź do kursu
+              </template>
+              <template v-else-if="course.price === 0">
+                {{ isPurchasing ? 'Zapisywanie...' : 'Zapisz się' }}
+              </template>
+              <template v-else>
+                {{ isPurchasing ? 'Przekierowanie...' : 'Kup teraz' }}
+              </template>
+            </UiButton>
+            <template #fallback>
+              <UiButton variant="primary" disabled>Ładowanie...</UiButton>
             </template>
-            <template v-else-if="course.price === 0">
-              {{ isPurchasing ? 'Zapisywanie...' : 'Zapisz się' }}
-            </template>
-            <template v-else>
-              {{ isPurchasing ? 'Przekierowanie...' : 'Kup teraz' }}
-            </template>
-          </button>
+          </ClientOnly>
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success'
   size?: 'sm' | 'md' | 'lg'
   loading?: boolean
   disabled?: boolean
@@ -20,6 +20,7 @@ const variantClasses = {
   secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 focus:ring-slate-500',
   ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus:ring-slate-500',
   danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+  success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
 }
 
 const sizeClasses = {
