@@ -3,7 +3,10 @@ import { prisma } from '~~/server/utils/prisma'
 
 const updateProfileSchema = z.object({
   name: z.string().min(1, 'Imię jest wymagane').max(100),
-  avatarUrl: z.string().url().nullable().optional(),
+  avatarUrl: z.string().refine(
+    (val) => val === '' || val.startsWith('/') || val.startsWith('http://') || val.startsWith('https://'),
+    { message: 'Nieprawidłowy URL' }
+  ).nullable().optional(),
 })
 
 export default defineEventHandler(async (event) => {

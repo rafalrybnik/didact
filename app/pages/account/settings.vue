@@ -82,7 +82,7 @@ async function handleAvatarUpload(event: Event) {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await $fetch<{ url: string }>('/api/upload/image', {
+    const response = await $fetch<{ url: string }>('/api/account/avatar', {
       method: 'POST',
       body: formData,
     })
