@@ -66,8 +66,8 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 - [ ] `app/composables/useToast.ts` - zarządzanie toastami
 
 ### 1.5 Baza danych - Prisma Schema
-- [ ] Inicjalizacja Prisma: `npx prisma init`
-- [ ] Model `User` (id, email, password_hash, name, avatar_url, role: ADMIN/STUDENT, created_at)
+- [x] Inicjalizacja Prisma: `npx prisma init`
+- [x] Model `User` (id, email, password_hash, name, avatar_url, role: ADMIN/STUDENT, created_at)
 - [ ] Model `Course` (id, title, slug, description, sales_description, thumbnail_url, price, currency, structure_mode: MODULAR/FLAT/FREESTYLE, status: DRAFT/PUBLISHED/ARCHIVED, enforce_sequential, require_assignment_pass, created_at)
 - [ ] Model `Module` (id, course_id, title, order)
 - [ ] Model `Lesson` (id, course_id, module_id?, title, content_html, video_url, video_iframe, order, created_at)
@@ -326,7 +326,7 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ### 7.4 Deployment - Railway
 
 #### Konfiguracja Railway
-- [ ] `railway.toml` - konfiguracja deploymentu:
+- [x] `railway.toml` - konfiguracja deploymentu:
   ```toml
   [build]
   builder = "dockerfile"
