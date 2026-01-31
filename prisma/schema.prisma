@@ -1,5 +1,5 @@
 // Prisma Schema for Didact LMS
-// Full schema will be built incrementally per TODO.md phases
+// Single-tenant LMS for individual course creators
 
 generator client {
   provider = "prisma-client-js"
@@ -11,7 +11,28 @@ datasource db {
 }
 
 // =============================================================================
-// Phase 1.5 - Core Models (minimal for initial deploy)
+// Enums
+// =============================================================================
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum StructureMode {
+  MODULAR   // Course has modules containing lessons
+  FLAT      // Course has only lessons (no modules)
+  FREESTYLE // Mixed - some lessons in modules, some standalone
+}
+
+// =============================================================================
+// User
 // =============================================================================
 
 model User {
@@ -24,10 +45,119 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
+  // Relations
+  enrollments Enrollment[]
+  progress    Progress[]
+
   @@map("users")
 }
 
-enum Role {
-  ADMIN
-  STUDENT
+// =============================================================================
+// Course
+// =============================================================================
+
+model Course {
+  id                    String       @id @default(cuid())
+  title                 String
+  slug                  String       @unique
+  description           String?      @db.Text
+  salesDescription      String?      @map("sales_description") @db.Text
+  thumbnailUrl          String?      @map("thumbnail_url")
+  price                 Int          @default(0) // Price in cents/grosze
+  currency              String       @default("PLN")
+  structureMode         StructureMode @default(MODULAR) @map("structure_mode")
+  status                CourseStatus @default(DRAFT)
+  enforceSequential     Boolean      @default(false) @map("enforce_sequential")
+  requireAssignmentPass Boolean      @default(false) @map("require_assignment_pass")
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  modules     Module[]
+  lessons     Lesson[]
+  enrollments Enrollment[]
+
+  @@map("courses")
+}
+
+// =============================================================================
+// Module (optional grouping of lessons within a course)
+// =============================================================================
+
+model Module {
+  id        String   @id @default(cuid())
+  courseId  String   @map("course_id")
+  title     String
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+
+  @@map("modules")
+}
+
+// =============================================================================
+// Lesson
+// =============================================================================
+
+model Lesson {
+  id          String   @id @default(cuid())
+  courseId    String   @map("course_id")
+  moduleId    String?  @map("module_id") // Optional - can be standalone
+  title       String
+  contentHtml String?  @map("content_html") @db.Text
+  videoUrl    String?  @map("video_url")
+  videoIframe String?  @map("video_iframe") @db.Text
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  course   Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module   Module?    @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  progress Progress[]
+
+  @@map("lessons")
+}
+
+// =============================================================================
+// Enrollment (user enrolled in a course)
+// =============================================================================
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  courseId  String   @map("course_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+// =============================================================================
+// Progress (user's progress in a lesson)
+// =============================================================================
+
+model Progress {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  lessonId    String    @map("lesson_id")
+  completed   Boolean   @default(false)
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@map("progress")
 }

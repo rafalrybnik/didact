@@ -68,13 +68,13 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 ### 1.5 Baza danych - Prisma Schema
 - [x] Inicjalizacja Prisma: `npx prisma init`
 - [x] Model `User` (id, email, password_hash, name, avatar_url, role: ADMIN/STUDENT, created_at)
-- [ ] Model `Course` (id, title, slug, description, sales_description, thumbnail_url, price, currency, structure_mode: MODULAR/FLAT/FREESTYLE, status: DRAFT/PUBLISHED/ARCHIVED, enforce_sequential, require_assignment_pass, created_at)
-- [ ] Model `Module` (id, course_id, title, order)
-- [ ] Model `Lesson` (id, course_id, module_id?, title, content_html, video_url, video_iframe, order, created_at)
-- [ ] Model `Enrollment` (id, user_id, course_id, created_at)
-- [ ] Model `Progress` (id, user_id, lesson_id, completed, completed_at)
-- [ ] Relacje między modelami
-- [ ] Pierwsza migracja: `npx prisma migrate dev --name init`
+- [x] Model `Course` (id, title, slug, description, sales_description, thumbnail_url, price, currency, structure_mode: MODULAR/FLAT/FREESTYLE, status: DRAFT/PUBLISHED/ARCHIVED, enforce_sequential, require_assignment_pass, created_at)
+- [x] Model `Module` (id, course_id, title, order)
+- [x] Model `Lesson` (id, course_id, module_id?, title, content_html, video_url, video_iframe, order, created_at)
+- [x] Model `Enrollment` (id, user_id, course_id, created_at)
+- [x] Model `Progress` (id, user_id, lesson_id, completed, completed_at)
+- [x] Relacje między modelami
+- [x] Pierwsza migracja: `npx prisma migrate dev --name init_core_models`
 
 ### 1.6 Autentykacja - Backend
 - [ ] `server/utils/prisma.ts` - singleton klienta Prisma
