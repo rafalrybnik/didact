@@ -12,18 +12,20 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 
 ### 1.1 Inicjalizacja projektu
 - [ ] `npx nuxi init didact` - utworzenie projektu Nuxt 3
-- [ ] Instalacja zależności: `@nuxtjs/tailwindcss`, `prisma`, `@prisma/client`, `zod`, `jsonwebtoken`, `bcrypt`, `lucide-vue-next`
+- [ ] Instalacja zależności: `@nuxtjs/tailwindcss`, `prisma`, `@prisma/client`, `zod`, `jsonwebtoken`, `bcrypt`, `lucide-vue-next`, `nuxt-security`
 - [ ] Konfiguracja `nuxt.config.ts`:
-  - Moduły (tailwindcss)
+  - Moduły (`tailwindcss`, `nuxt-security`)
   - runtimeConfig dla JWT_SECRET, STRIPE_KEY, DATABASE_URL
   - Nitro preset: `node-server`
   - Host: `0.0.0.0`, Port: `process.env.PORT || 3000` (Railway requirement)
+- [ ] Setup Vitest (konfiguracja środowiska testowego)
 
 ### 1.2 Docker - Środowisko lokalne i produkcyjne
 - [ ] `Dockerfile` (multi-stage build):
   - Stage 1: `node:20-alpine` - instalacja dependencies + build
   - Stage 2: `node:20-alpine` - tylko produkcyjne pliki + `node .output/server/index.mjs`
   - Prisma generate w buildzie
+  - **WAŻNE:** Migracje (`prisma migrate deploy`) NIE mogą być w buildzie. Będą uruchamiane jako Railway Deploy Command.
 - [ ] `docker-compose.yml` (dev):
   - Serwis `app` - aplikacja Nuxt z hot-reload (volume mount)
   - Serwis `db` - PostgreSQL 15
@@ -150,7 +152,7 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 - [ ] `app/components/admin/MetricCard.vue` - karta statystyki
 
 ### 2.6 Storage dla plików
-- [ ] `server/utils/storage.ts` - adapter storage (interfejs dla lokalnego dev i zewnętrznego prod)
+- [ ] `server/utils/storage.ts` - adapter storage (interfejs dla lokalnego dev i zewnętrznego prod). **WAŻNE:** Ścisły interfejs (upload, delete, getPublicUrl), żadnych bezpośrednich operacji `fs` w kontrolerach.
 - [ ] `server/api/upload/image.post.ts` - endpoint uploadu obrazów
 - [ ] Konfiguracja: lokalny storage dla dev, przygotowanie pod R2/S3 dla prod
 
@@ -353,14 +355,13 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 
 #### CI/CD
 - [ ] Railway auto-deploy z GitHub main branch
-- [ ] Prisma migrate w procesie buildu (`npx prisma migrate deploy` w Dockerfile)
+- [ ] Konfiguracja "Deploy Command" w Railway: `npx prisma migrate deploy` (uruchamiane przed startem aplikacji)
 
 #### Dokumentacja
 - [ ] README.md - instrukcja deploymentu na Railway
 - [ ] README.md - instrukcja uruchomienia lokalnego z Docker Compose
 
 ### 7.5 Testy
-- [ ] Setup Vitest
 - [ ] Testy jednostkowe: utils (jwt, password, validators)
 - [ ] Testy API: auth, courses CRUD
 - [ ] Testy E2E: podstawowy flow zakupu (opcjonalnie Playwright)
