@@ -8,22 +8,37 @@ Didact is a single-tenant Learning Management System (LMS) for individual course
 
 **Status:** Planning phase - implementation follows the 7-phase BACKLOG.md roadmap.
 
+## Team Structure
+
+- **Claude** - główny deweloper, pisze większość kodu
+- **Gemini** - tech lead / architekt, funkcja kontrolna i doradcza
+
+Przy decyzjach architektonicznych lub wątpliwościach technicznych - konsultuj z Gemini przed implementacją.
+
 ## Tech Stack
 
 - **Framework:** Nuxt 3 (Vue 3 + Nitro for SSR/API)
 - **Database:** PostgreSQL with Prisma ORM
 - **Styling:** Tailwind CSS
+- **Icons:** Lucide
 - **Validation:** Zod (server and client)
 - **Auth:** Custom JWT with HttpOnly cookies
 - **Payments:** Stripe
-- **Deployment:** Docker (Railway/VPS)
+- **Deployment:** Docker on Railway
 
 ## Development Commands
 
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run preview      # Preview production build
+# Docker (recommended)
+docker compose up        # Start app + PostgreSQL
+docker compose down      # Stop containers
+
+# Local (without Docker)
+npm run dev              # Start development server
+npm run build            # Build for production
+npm run preview          # Preview production build
+
+# Database
 npx prisma migrate dev   # Run database migrations
 npx prisma generate      # Generate Prisma client
 npx prisma studio        # Open database GUI
@@ -71,6 +86,18 @@ lang/                # Translation files (pl.json)
 - i18n via JSON files in `/lang` directory (Polish primary)
 - Direct purchase model (no shopping cart)
 
+## UI/UX Guidelines
+
+See `docs/UI.md` for full details. Key principles:
+
+- **Philosophy:** "Content First" - UI recedes to let course content shine
+- **Style:** "Refined Utility" - professional but not generic
+- **"10% Magic" rule:** Unique branding only on: Buy button, Course Player sidebar, Logo/Header
+- **Typography:** Inter or Plus Jakarta Sans, generous whitespace
+- **Colors:** Single brand color + Slate/Zinc neutrals (no pure black)
+- **Components:** Skeleton loaders (not spinners), Toast notifications, subtle shadows
+- **Transitions:** `transition-all duration-200` on interactive elements
+
 ## Database Models
 
 Core entities: Users, Courses, Modules, Lessons, Progress, Orders, Pages, Posts, Threads, Quiz, Homework, Submission
@@ -82,3 +109,4 @@ Located in `docs/`:
 - `FRS.md` - Functional requirements specification
 - `TECH_STACK.md` - Technical architecture decisions
 - `BACKLOG.md` - Development roadmap (7 phases)
+- `UI.md` - UI/UX design guidelines and component specs
