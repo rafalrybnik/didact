@@ -77,14 +77,14 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 - [x] Pierwsza migracja: `npx prisma migrate dev --name init_core_models`
 
 ### 1.6 Autentykacja - Backend
-- [ ] `server/utils/prisma.ts` - singleton klienta Prisma
-- [ ] `server/utils/jwt.ts` - funkcje signToken, verifyToken
-- [ ] `server/utils/password.ts` - hashPassword, comparePassword (bcrypt)
-- [ ] `server/api/auth/register.post.ts` - rejestracja (Zod walidacja, hash hasła, zapis do DB)
-- [ ] `server/api/auth/login.post.ts` - logowanie (weryfikacja, generowanie JWT, HttpOnly cookie)
-- [ ] `server/api/auth/logout.post.ts` - wylogowanie (czyszczenie cookie)
-- [ ] `server/api/auth/me.get.ts` - pobranie aktualnego użytkownika z tokenu
-- [ ] `server/middleware/auth.ts` - middleware weryfikujący JWT dla chronionych route'ów
+- [x] `server/utils/prisma.ts` - singleton klienta Prisma
+- [x] `server/utils/jwt.ts` - funkcje signToken, verifyToken
+- [x] `server/utils/password.ts` - hashPassword, comparePassword (bcrypt)
+- [x] `server/api/auth/register.post.ts` - rejestracja (Zod walidacja, hash hasła, zapis do DB)
+- [x] `server/api/auth/login.post.ts` - logowanie (weryfikacja, generowanie JWT, HttpOnly cookie)
+- [x] `server/api/auth/logout.post.ts` - wylogowanie (czyszczenie cookie)
+- [x] `server/api/auth/me.get.ts` - pobranie aktualnego użytkownika z tokenu
+- [x] `server/middleware/auth.ts` - middleware weryfikujący JWT dla chronionych route'ów
 
 ### 1.7 Layouty i podstawowa struktura stron
 - [ ] `app/layouts/default.vue` - bazowy layout
