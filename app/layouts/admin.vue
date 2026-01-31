@@ -16,6 +16,8 @@ import {
 
 const { user, logout } = useAuth()
 const route = useRoute()
+const config = useRuntimeConfig()
+const appName = config.public.appName
 
 const isSidebarOpen = ref(false)
 
@@ -70,7 +72,7 @@ async function handleLogout() {
         <div class="flex items-center justify-between h-16 px-4 border-b border-slate-800">
           <NuxtLink to="/admin" class="flex items-center gap-2 text-white">
             <GraduationCap class="h-7 w-7 text-primary-400" />
-            <span class="text-lg font-semibold">Didact</span>
+            <span class="text-lg font-semibold">{{ appName }}</span>
           </NuxtLink>
           <button
             class="lg:hidden text-slate-400 hover:text-white"
@@ -138,7 +140,7 @@ async function handleLogout() {
           </button>
           <NuxtLink to="/admin" class="flex items-center gap-2 text-primary-600">
             <GraduationCap class="h-6 w-6" />
-            <span class="font-semibold">Didact</span>
+            <span class="font-semibold">{{ appName }}</span>
           </NuxtLink>
           <div class="w-6" />
         </div>

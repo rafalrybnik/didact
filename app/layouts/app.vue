@@ -2,6 +2,8 @@
 import { GraduationCap, User, LogOut, Settings, MessageSquare } from 'lucide-vue-next'
 
 const { user, logout } = useAuth()
+const config = useRuntimeConfig()
+const appName = config.public.appName
 
 async function handleLogout() {
   await logout()
@@ -19,7 +21,7 @@ async function handleLogout() {
           <div class="flex items-center">
             <NuxtLink to="/" class="flex items-center gap-2 text-primary-600 hover:text-primary-700">
               <GraduationCap class="h-6 w-6" />
-              <span class="text-lg font-semibold">Didact</span>
+              <span class="text-lg font-semibold">{{ appName }}</span>
             </NuxtLink>
           </div>
 

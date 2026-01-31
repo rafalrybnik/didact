@@ -8,6 +8,8 @@ definePageMeta({
 
 const { register } = useAuth()
 const { error: showError, success: showSuccess } = useToast()
+const config = useRuntimeConfig()
+const appName = config.public.appName
 
 const form = reactive({
   name: '',
@@ -54,7 +56,7 @@ async function handleSubmit() {
       <div class="text-center mb-8">
         <NuxtLink to="/" class="inline-flex items-center gap-2 text-primary-600">
           <GraduationCap class="h-10 w-10" />
-          <span class="text-2xl font-bold">Didact</span>
+          <span class="text-2xl font-bold">{{ appName }}</span>
         </NuxtLink>
       </div>
 

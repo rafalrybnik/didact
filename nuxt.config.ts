@@ -17,6 +17,17 @@ export default defineNuxtConfig({
   // Global CSS
   css: ['~/assets/css/main.css'],
 
+  // App configuration
+  app: {
+    head: {
+      title: process.env.NUXT_PUBLIC_APP_NAME || 'Didact',
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      ],
+    },
+  },
+
   runtimeConfig: {
     // Server-side only
     jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-in-production',
@@ -27,6 +38,7 @@ export default defineNuxtConfig({
     // Public (exposed to client)
     public: {
       appUrl: process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3000',
+      appName: process.env.NUXT_PUBLIC_APP_NAME || 'Didact',
     },
   },
 

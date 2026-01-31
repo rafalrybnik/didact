@@ -15,6 +15,8 @@ const isEnrolled = computed(() => data.value?.isEnrolled)
 
 const { isLoggedIn } = useAuth()
 const { error: showError } = useToast()
+const config = useRuntimeConfig()
+const appName = config.public.appName
 
 // Price formatting
 function formatPrice(price: number, currency: string): string {
@@ -77,7 +79,7 @@ async function handlePurchase() {
 
 // SEO
 useHead(() => ({
-  title: course.value?.title ? `${course.value.title} | Didact` : 'Kurs | Didact',
+  title: course.value?.title ? `${course.value.title} | ${appName}` : `Kurs | ${appName}`,
   meta: [
     { name: 'description', content: course.value?.description || '' },
   ],

@@ -2,6 +2,8 @@
 import { GraduationCap, LogIn, UserPlus } from 'lucide-vue-next'
 
 const { user, isLoggedIn } = useAuth()
+const config = useRuntimeConfig()
+const appName = config.public.appName
 </script>
 
 <template>
@@ -14,7 +16,7 @@ const { user, isLoggedIn } = useAuth()
           <div class="flex items-center">
             <NuxtLink to="/" class="flex items-center gap-2 text-primary-600 hover:text-primary-700">
               <GraduationCap class="h-8 w-8" />
-              <span class="text-xl font-semibold">Didact</span>
+              <span class="text-xl font-semibold">{{ appName }}</span>
             </NuxtLink>
           </div>
 
@@ -60,7 +62,7 @@ const { user, isLoggedIn } = useAuth()
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
           <div class="flex items-center gap-2 text-slate-500">
             <GraduationCap class="h-5 w-5" />
-            <span class="text-sm">Didact LMS</span>
+            <span class="text-sm">{{ appName }}</span>
           </div>
           <div class="text-sm text-slate-500">
             &copy; {{ new Date().getFullYear() }} Wszelkie prawa zastrzeżone
