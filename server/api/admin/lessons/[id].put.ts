@@ -11,13 +11,12 @@ const updateLessonSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const courseId = getRouterParam(event, 'courseId')
   const id = getRouterParam(event, 'id')
 
-  if (!courseId || !id) {
+  if (!id) {
     throw createError({
       statusCode: 400,
-      message: 'ID kursu i lekcji są wymagane',
+      message: 'ID lekcji jest wymagane',
     })
   }
 
@@ -31,9 +30,9 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Check if lesson exists and belongs to course
-  const existingLesson = await prisma.lesson.findFirst({
-    where: { id, courseId },
+  // Check if lesson exists
+  const existingLesson = await prisma.lesson.findUnique({
+    where: { id },
   })
 
   if (!existingLesson) {
@@ -43,10 +42,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // If moduleId is being updated, verify it exists and belongs to this course
+  // If moduleId is being updated, verify it exists and belongs to the same course
   if (result.data.moduleId !== undefined && result.data.moduleId !== null) {
     const module = await prisma.module.findFirst({
-      where: { id: result.data.moduleId, courseId },
+      where: { id: result.data.moduleId, courseId: existingLesson.courseId },
     })
 
     if (!module) {

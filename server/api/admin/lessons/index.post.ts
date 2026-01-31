@@ -2,8 +2,9 @@ import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
 
 const createLessonSchema = z.object({
-  title: z.string().min(1, 'Tytuł jest wymagany'),
+  courseId: z.string().min(1, 'ID kursu jest wymagane'),
   moduleId: z.string().optional().nullable(),
+  title: z.string().min(1, 'Tytuł jest wymagany'),
   contentHtml: z.string().optional().nullable(),
   videoUrl: z.string().url().optional().nullable(),
   videoIframe: z.string().optional().nullable(),
@@ -11,14 +12,17 @@ const createLessonSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const courseId = getRouterParam(event, 'courseId')
+  const body = await readBody(event)
 
-  if (!courseId) {
+  const result = createLessonSchema.safeParse(body)
+  if (!result.success) {
     throw createError({
       statusCode: 400,
-      message: 'ID kursu jest wymagane',
+      message: result.error.errors[0].message,
     })
   }
+
+  const { courseId, moduleId, title, contentHtml, videoUrl, videoIframe, order: providedOrder } = result.data
 
   // Check if course exists
   const course = await prisma.course.findUnique({
@@ -32,20 +36,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const body = await readBody(event)
-
-  const result = createLessonSchema.safeParse(body)
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: result.error.errors[0].message,
-    })
-  }
-
   // If moduleId is provided, verify it exists and belongs to this course
-  if (result.data.moduleId) {
+  if (moduleId) {
     const module = await prisma.module.findFirst({
-      where: { id: result.data.moduleId, courseId },
+      where: { id: moduleId, courseId },
     })
 
     if (!module) {
@@ -57,12 +51,12 @@ export default defineEventHandler(async (event) => {
   }
 
   // If order not provided, get the next order
-  let order = result.data.order
+  let order = providedOrder
   if (order === undefined) {
     const lastLesson = await prisma.lesson.findFirst({
       where: {
         courseId,
-        moduleId: result.data.moduleId || null,
+        moduleId: moduleId || null,
       },
       orderBy: { order: 'desc' },
     })
@@ -72,11 +66,11 @@ export default defineEventHandler(async (event) => {
   const lesson = await prisma.lesson.create({
     data: {
       courseId,
-      moduleId: result.data.moduleId || null,
-      title: result.data.title,
-      contentHtml: result.data.contentHtml,
-      videoUrl: result.data.videoUrl,
-      videoIframe: result.data.videoIframe,
+      moduleId: moduleId || null,
+      title,
+      contentHtml,
+      videoUrl,
+      videoIframe,
       order,
     },
   })

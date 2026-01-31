@@ -1,19 +1,18 @@
 import { prisma } from '~~/server/utils/prisma'
 
 export default defineEventHandler(async (event) => {
-  const courseId = getRouterParam(event, 'courseId')
   const id = getRouterParam(event, 'id')
 
-  if (!courseId || !id) {
+  if (!id) {
     throw createError({
       statusCode: 400,
-      message: 'ID kursu i modułu są wymagane',
+      message: 'ID modułu jest wymagane',
     })
   }
 
-  // Check if module exists and belongs to course
-  const existingModule = await prisma.module.findFirst({
-    where: { id, courseId },
+  // Check if module exists
+  const existingModule = await prisma.module.findUnique({
+    where: { id },
   })
 
   if (!existingModule) {

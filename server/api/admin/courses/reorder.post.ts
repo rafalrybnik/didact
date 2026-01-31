@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
 
 const reorderSchema = z.object({
+  courseId: z.string().min(1, 'ID kursu jest wymagane'),
   modules: z.array(z.object({
     id: z.string(),
     order: z.number().int().min(0),
@@ -14,14 +15,17 @@ const reorderSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const courseId = getRouterParam(event, 'courseId')
+  const body = await readBody(event)
 
-  if (!courseId) {
+  const result = reorderSchema.safeParse(body)
+  if (!result.success) {
     throw createError({
       statusCode: 400,
-      message: 'ID kursu jest wymagane',
+      message: result.error.errors[0].message,
     })
   }
+
+  const { courseId, modules, lessons } = result.data
 
   // Check if course exists
   const course = await prisma.course.findUnique({
@@ -35,20 +39,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const body = await readBody(event)
-
-  const result = reorderSchema.safeParse(body)
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: result.error.errors[0].message,
-    })
-  }
-
   // Update modules order
-  if (result.data.modules && result.data.modules.length > 0) {
+  if (modules && modules.length > 0) {
     await prisma.$transaction(
-      result.data.modules.map((m) =>
+      modules.map((m) =>
         prisma.module.update({
           where: { id: m.id },
           data: { order: m.order },
@@ -58,9 +52,9 @@ export default defineEventHandler(async (event) => {
   }
 
   // Update lessons order and moduleId
-  if (result.data.lessons && result.data.lessons.length > 0) {
+  if (lessons && lessons.length > 0) {
     await prisma.$transaction(
-      result.data.lessons.map((l) =>
+      lessons.map((l) =>
         prisma.lesson.update({
           where: { id: l.id },
           data: {

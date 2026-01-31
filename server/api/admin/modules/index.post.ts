@@ -2,19 +2,23 @@ import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
 
 const createModuleSchema = z.object({
+  courseId: z.string().min(1, 'ID kursu jest wymagane'),
   title: z.string().min(1, 'Tytuł jest wymagany'),
   order: z.number().int().min(0).optional(),
 })
 
 export default defineEventHandler(async (event) => {
-  const courseId = getRouterParam(event, 'courseId')
+  const body = await readBody(event)
 
-  if (!courseId) {
+  const result = createModuleSchema.safeParse(body)
+  if (!result.success) {
     throw createError({
       statusCode: 400,
-      message: 'ID kursu jest wymagane',
+      message: result.error.errors[0].message,
     })
   }
+
+  const { courseId, title, order: providedOrder } = result.data
 
   // Check if course exists
   const course = await prisma.course.findUnique({
@@ -28,18 +32,8 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const body = await readBody(event)
-
-  const result = createModuleSchema.safeParse(body)
-  if (!result.success) {
-    throw createError({
-      statusCode: 400,
-      message: result.error.errors[0].message,
-    })
-  }
-
   // If order not provided, get the next order
-  let order = result.data.order
+  let order = providedOrder
   if (order === undefined) {
     const lastModule = await prisma.module.findFirst({
       where: { courseId },
@@ -51,7 +45,7 @@ export default defineEventHandler(async (event) => {
   const module = await prisma.module.create({
     data: {
       courseId,
-      title: result.data.title,
+      title,
       order,
     },
   })

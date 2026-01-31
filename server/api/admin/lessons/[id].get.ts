@@ -1,20 +1,26 @@
 import { prisma } from '~~/server/utils/prisma'
 
 export default defineEventHandler(async (event) => {
-  const courseId = getRouterParam(event, 'courseId')
   const id = getRouterParam(event, 'id')
 
-  if (!courseId || !id) {
+  if (!id) {
     throw createError({
       statusCode: 400,
-      message: 'ID kursu i lekcji są wymagane',
+      message: 'ID lekcji jest wymagane',
     })
   }
 
-  const lesson = await prisma.lesson.findFirst({
-    where: { id, courseId },
+  const lesson = await prisma.lesson.findUnique({
+    where: { id },
     include: {
       module: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
     },
   })
 
