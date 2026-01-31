@@ -152,16 +152,18 @@ Plan implementacji w 7 fazach, zgodnie z BACKLOG.md. Każda faza zawiera konkret
 - [x] `app/components/admin/MetricCard.vue` - karta statystyki
 
 ### 2.6 Storage dla plików
-- [ ] `server/utils/storage.ts` - adapter storage (interfejs dla lokalnego dev i zewnętrznego prod). **WAŻNE:** Ścisły interfejs (upload, delete, getPublicUrl), żadnych bezpośrednich operacji `fs` w kontrolerach.
-- [ ] `server/api/upload/image.post.ts` - endpoint uploadu obrazów
-- [ ] Konfiguracja: lokalny storage dla dev, przygotowanie pod R2/S3 dla prod
+- [x] `server/utils/storage.ts` - adapter storage (interfejs dla lokalnego dev i zewnętrznego prod)
+- [x] `server/api/upload/image.post.ts` - endpoint uploadu obrazów (multipart/form-data)
+- [x] `server/api/file.get.ts` - endpoint serwowania uploadowanych plików
+- [x] `app/components/admin/ImageUploader.vue` - komponent uploadu z drag&drop
+- [x] Konfiguracja: lokalny storage dla dev, przygotowanie pod R2/S3 dla prod
 
 ### 2.7 Komponenty edytora
 - [ ] `app/components/admin/RichTextEditor.vue` - WYSIWYG (TipTap lub podobny)
 - [x] `app/components/admin/ModuleForm.vue` - formularz modułu (modal)
 - [x] `app/components/admin/LessonForm.vue` - formularz lekcji (modal)
 - [x] `app/components/admin/CurriculumTree.vue` - drzewo modułów/lekcji z drag&drop (sortable)
-- [ ] `app/components/admin/ImageUploader.vue` - upload miniaturek (via storage adapter)
+- [x] `app/components/admin/ImageUploader.vue` - upload miniaturek z drag&drop (via storage adapter)
 
 ---
 

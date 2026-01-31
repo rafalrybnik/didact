@@ -361,10 +361,9 @@ async function handleReorder(type: 'module' | 'lesson', items: { id: string; ord
             </div>
           </div>
 
-          <UiInput
+          <AdminImageUploader
             v-model="form.thumbnailUrl"
-            label="URL miniaturki"
-            placeholder="https://..."
+            label="Miniaturka kursu"
           />
 
           <div>
