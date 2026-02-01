@@ -219,15 +219,17 @@
 
 ## Rekomendacja dla Didact LMS
 
-### Opcja 1: Rozbudowany TipTap (Rekomendowane)
+### Opcja 1: Rozbudowany TipTap (Rekomendowane) ✅ ZAIMPLEMENTOWANO
 
-Zostajemy przy TipTap, ale rozbudowujemy o:
-- Więcej extensions (Table, Image upload, YouTube embed)
-- Lepszy toolbar z dropdownami
-- Slash commands (styl Notion)
-- Vuetify Pro TipTap lub Element TipTap jako baza
+Zostajemy przy TipTap, rozbudowany o:
+- ✅ Table extension (wstawianie, dodawanie/usuwanie wierszy i kolumn)
+- ✅ Image (przez URL)
+- ✅ YouTube embed
+- ✅ Underline, Strikethrough, Highlight
+- ✅ Text alignment (left, center, right)
+- ✅ Lepszy toolbar z grupami przycisków
+- ✅ Dialogi modalne zamiast window.prompt()
 
-**Nakład pracy**: 4-6h
 **Koszt**: $0
 
 ### Opcja 2: CKEditor 5
