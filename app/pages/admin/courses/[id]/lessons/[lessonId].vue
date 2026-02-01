@@ -246,6 +246,9 @@ const showPreview = ref(false)
             </ul>
           </UiCard>
 
+          <!-- Attachments Editor -->
+          <AdminAttachmentsEditor :lesson-id="lessonId" />
+
           <!-- Quiz Editor -->
           <AdminQuizEditor :lesson-id="lessonId" />
 

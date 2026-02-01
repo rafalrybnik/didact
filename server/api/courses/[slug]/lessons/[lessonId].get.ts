@@ -155,6 +155,7 @@ export default defineEventHandler(async (event) => {
       contentHtml: lesson.contentHtml,
       videoUrl: lesson.videoUrl,
       videoIframe: lesson.videoIframe,
+      attachments: lesson.attachments,
       module: lesson.module,
       isCompleted,
     },

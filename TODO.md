@@ -36,13 +36,13 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 - [x] Aktualizacja `app/layouts/public.vue` - dynamiczne pobieranie i wyświetlanie linków
 - [x] Cache linków (via useFetch with key)
 
-### 1.4 Materiały do pobrania (REQ-011 - częściowe)
+### 1.4 Materiały do pobrania (REQ-011 - częściowe) ✅
 **Opis:** Admin może dodać pliki PDF/ZIP do lekcji jako materiały do pobrania.
 
-- [ ] Rozszerzenie modelu `Lesson` - pole `attachments` (JSON array lub relacja)
-- [ ] UI w edytorze lekcji - upload wielu plików
-- [ ] Wyświetlanie listy załączników w playerze kursu
-- [ ] Endpoint pobierania z weryfikacją dostępu
+- [x] Rozszerzenie modelu `Lesson` - pole `attachments` (JSON array)
+- [x] UI w edytorze lekcji - upload wielu plików (AdminAttachmentsEditor)
+- [x] Wyświetlanie listy załączników w playerze kursu (CourseLessonAttachments)
+- [x] Endpoint pobierania z weryfikacją dostępu (via existing storage)
 
 ---
 

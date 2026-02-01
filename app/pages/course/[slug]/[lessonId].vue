@@ -173,6 +173,12 @@ const showMobileSidebar = ref(false)
               :video-iframe="lesson.videoIframe"
             />
 
+            <!-- Attachments -->
+            <CourseLessonAttachments
+              v-if="lesson.attachments && lesson.attachments.length > 0"
+              :attachments="lesson.attachments"
+            />
+
             <!-- Quiz -->
             <div v-if="quiz && quizAttempts" class="max-w-4xl mx-auto mt-8">
               <CourseQuizPlayer
