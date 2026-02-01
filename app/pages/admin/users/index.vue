@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Users, User, Shield, Mail, Calendar } from 'lucide-vue-next'
+import { Users, User, Shield, Mail, Calendar, Pencil } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'admin',
@@ -102,6 +102,7 @@ function formatDate(date: string) {
               <th class="px-4 py-3 text-left text-sm font-medium text-slate-600">Kursy</th>
               <th class="px-4 py-3 text-left text-sm font-medium text-slate-600">Zamówienia</th>
               <th class="px-4 py-3 text-left text-sm font-medium text-slate-600">Dołączył</th>
+              <th class="px-4 py-3 text-right text-sm font-medium text-slate-600"></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-200">
@@ -141,6 +142,15 @@ function formatDate(date: string) {
               </td>
               <td class="px-4 py-3 text-sm text-slate-500">
                 {{ formatDate(user.createdAt) }}
+              </td>
+              <td class="px-4 py-3 text-right">
+                <NuxtLink
+                  :to="`/admin/users/${user.id}`"
+                  class="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
+                >
+                  <Pencil class="w-4 h-4" />
+                  Edytuj
+                </NuxtLink>
               </td>
             </tr>
           </tbody>
