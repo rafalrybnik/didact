@@ -14,6 +14,17 @@ export default defineNuxtConfig({
     'nuxt-security',
   ],
 
+  // Security configuration - allow YouTube and Vimeo embeds
+  security: {
+    headers: {
+      contentSecurityPolicy: {
+        'frame-src': ["'self'", 'https://www.youtube.com', 'https://youtube.com', 'https://www.youtube-nocookie.com', 'https://player.vimeo.com'],
+        'img-src': ["'self'", 'data:', 'https:', 'blob:'],
+      },
+      crossOriginEmbedderPolicy: false,
+    },
+  },
+
   // Global CSS
   css: ['~/assets/css/main.css'],
 
