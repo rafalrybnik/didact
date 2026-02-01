@@ -30,46 +30,46 @@ async function handleLogout() {
             <NuxtLink
               v-if="user?.role === 'ADMIN'"
               to="/admin"
-              class="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900"
+              class="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900"
             >
-              <Shield class="h-4 w-4" />
-              Panel admina
+              <Shield class="h-4 w-4 flex-shrink-0" />
+              <span>Panel admina</span>
             </NuxtLink>
 
             <!-- User links -->
-            <NuxtLink to="/account" class="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
-              <User class="h-4 w-4" />
-              Moje kursy
+            <NuxtLink to="/account" class="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
+              <User class="h-4 w-4 flex-shrink-0" />
+              <span>Moje kursy</span>
             </NuxtLink>
-            <NuxtLink to="/messages" class="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
-              <MessageSquare class="h-4 w-4" />
-              Wiadomości
+            <NuxtLink to="/messages" class="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
+              <MessageSquare class="h-4 w-4 flex-shrink-0" />
+              <span>Wiadomości</span>
             </NuxtLink>
-            <NuxtLink to="/account/settings" class="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
-              <Settings class="h-4 w-4" />
-              Ustawienia
+            <NuxtLink to="/account/settings" class="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
+              <Settings class="h-4 w-4 flex-shrink-0" />
+              <span>Ustawienia</span>
             </NuxtLink>
 
             <!-- Logout -->
             <button
-              class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700"
+              class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700"
               @click="handleLogout"
             >
-              <LogOut class="h-4 w-4" />
-              Wyloguj
+              <LogOut class="h-4 w-4 flex-shrink-0" />
+              <span>Wyloguj</span>
             </button>
           </template>
 
           <template v-else>
             <!-- Guest links -->
-            <NuxtLink to="/login" class="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
-              <LogIn class="h-4 w-4" />
-              Zaloguj się
+            <NuxtLink to="/login" class="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
+              <LogIn class="h-4 w-4 flex-shrink-0" />
+              <span>Zaloguj się</span>
             </NuxtLink>
             <NuxtLink to="/register">
               <UiButton variant="primary" size="sm">
-                <UserPlus class="h-4 w-4" />
-                Zarejestruj się
+                <UserPlus class="h-4 w-4 flex-shrink-0" />
+                <span>Zarejestruj się</span>
               </UiButton>
             </NuxtLink>
           </template>
