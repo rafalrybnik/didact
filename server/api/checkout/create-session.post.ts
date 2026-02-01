@@ -114,7 +114,7 @@ export default defineEventHandler(async (event) => {
   })
 
   const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card', 'blik'],
+    payment_method_types: ['card', 'blik', 'p24'],
     mode: 'payment',
     customer_email: user.email,
     client_reference_id: order.id,
