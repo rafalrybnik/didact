@@ -136,6 +136,7 @@ model Lesson {
   videoUrl    String?  @map("video_url")
   videoIframe String?  @map("video_iframe") @db.Text
   attachments Json?    // Array of {name, url, size, type}
+  dripDays    Int?     @map("drip_days") // Days after enrollment when lesson unlocks (null = immediate)
   order       Int      @default(0)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")

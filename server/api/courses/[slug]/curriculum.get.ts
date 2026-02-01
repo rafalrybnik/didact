@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
               id: true,
               title: true,
               order: true,
+              dripDays: true,
             },
           },
         },
@@ -44,6 +45,7 @@ export default defineEventHandler(async (event) => {
           id: true,
           title: true,
           order: true,
+          dripDays: true,
         },
       },
     },
@@ -67,6 +69,7 @@ export default defineEventHandler(async (event) => {
 
   // Check enrollment
   let isEnrolled = false
+  let enrollmentDate: Date | null = null
   if (auth?.userId) {
     const enrollment = await prisma.enrollment.findUnique({
       where: {
@@ -75,8 +78,12 @@ export default defineEventHandler(async (event) => {
           courseId: course.id,
         },
       },
+      select: {
+        createdAt: true,
+      },
     })
     isEnrolled = !!enrollment
+    enrollmentDate = enrollment?.createdAt || null
   }
 
   // If not enrolled and not admin, return limited info
@@ -116,14 +123,31 @@ export default defineEventHandler(async (event) => {
   const completedCount = Object.keys(progressMap).length
   const totalLessons = allLessonIds.length
 
+  // Helper to check drip lock status
+  function getDripStatus(dripDays: number | null): { dripLocked: boolean; unlockDate: string | null } {
+    if (!dripDays || dripDays <= 0 || !enrollmentDate) {
+      return { dripLocked: false, unlockDate: null }
+    }
+    const unlockDate = new Date(enrollmentDate)
+    unlockDate.setDate(unlockDate.getDate() + dripDays)
+    const now = new Date()
+    if (now >= unlockDate) {
+      return { dripLocked: false, unlockDate: null }
+    }
+    return { dripLocked: true, unlockDate: unlockDate.toISOString() }
+  }
+
   // Determine which lessons are unlocked (if sequential)
   const unlockedLessons = new Set<string>()
+  const dripLockMap: Record<string, { dripLocked: boolean; unlockDate: string | null }> = {}
+
   if (course.enforceSequential) {
     let previousCompleted = true
     // Process modules first
     for (const module of course.modules) {
       for (const lesson of module.lessons) {
-        if (previousCompleted) {
+        dripLockMap[lesson.id] = getDripStatus(lesson.dripDays)
+        if (previousCompleted && !dripLockMap[lesson.id].dripLocked) {
           unlockedLessons.add(lesson.id)
         }
         previousCompleted = progressMap[lesson.id] || false
@@ -131,14 +155,28 @@ export default defineEventHandler(async (event) => {
     }
     // Then standalone lessons
     for (const lesson of course.lessons) {
-      if (previousCompleted) {
+      dripLockMap[lesson.id] = getDripStatus(lesson.dripDays)
+      if (previousCompleted && !dripLockMap[lesson.id].dripLocked) {
         unlockedLessons.add(lesson.id)
       }
       previousCompleted = progressMap[lesson.id] || false
     }
   } else {
-    // All lessons unlocked
-    allLessonIds.forEach(id => unlockedLessons.add(id))
+    // Check drip locks only
+    for (const module of course.modules) {
+      for (const lesson of module.lessons) {
+        dripLockMap[lesson.id] = getDripStatus(lesson.dripDays)
+        if (!dripLockMap[lesson.id].dripLocked) {
+          unlockedLessons.add(lesson.id)
+        }
+      }
+    }
+    for (const lesson of course.lessons) {
+      dripLockMap[lesson.id] = getDripStatus(lesson.dripDays)
+      if (!dripLockMap[lesson.id].dripLocked) {
+        unlockedLessons.add(lesson.id)
+      }
+    }
   }
 
   return {
@@ -159,6 +197,8 @@ export default defineEventHandler(async (event) => {
         order: l.order,
         completed: progressMap[l.id] || false,
         unlocked: unlockedLessons.has(l.id),
+        dripLocked: dripLockMap[l.id]?.dripLocked || false,
+        unlockDate: dripLockMap[l.id]?.unlockDate || null,
       })),
     })),
     standaloneLessons: course.lessons.map(l => ({
@@ -167,6 +207,8 @@ export default defineEventHandler(async (event) => {
       order: l.order,
       completed: progressMap[l.id] || false,
       unlocked: unlockedLessons.has(l.id),
+      dripLocked: dripLockMap[l.id]?.dripLocked || false,
+      unlockDate: dripLockMap[l.id]?.unlockDate || null,
     })),
     progress: {
       completed: completedCount,

@@ -42,6 +42,7 @@ export default defineEventHandler(async (event) => {
 
   // Check enrollment
   let isEnrolled = false
+  let enrollmentDate: Date | null = null
   if (auth?.userId) {
     const enrollment = await prisma.enrollment.findUnique({
       where: {
@@ -50,8 +51,12 @@ export default defineEventHandler(async (event) => {
           courseId: course.id,
         },
       },
+      select: {
+        createdAt: true,
+      },
     })
     isEnrolled = !!enrollment
+    enrollmentDate = enrollment?.createdAt || null
   }
 
   if (!isEnrolled && !isAdmin) {
@@ -116,6 +121,19 @@ export default defineEventHandler(async (event) => {
           message: 'Musisz ukończyć poprzednie lekcje',
         })
       }
+    }
+  }
+
+  // Check drip content lock
+  if (lesson.dripDays && lesson.dripDays > 0 && enrollmentDate && !isAdmin) {
+    const unlockDate = new Date(enrollmentDate)
+    unlockDate.setDate(unlockDate.getDate() + lesson.dripDays)
+    const now = new Date()
+    if (now < unlockDate) {
+      throw createError({
+        statusCode: 403,
+        message: `Ta lekcja będzie dostępna ${unlockDate.toLocaleDateString('pl-PL')}`,
+      })
     }
   }
 

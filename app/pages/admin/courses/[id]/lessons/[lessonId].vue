@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Save, Play, FileText, Video, ChevronDown, ChevronUp } from 'lucide-vue-next'
+import { ArrowLeft, Save, Play, FileText, Video, ChevronDown, ChevronUp, Clock } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'admin',
@@ -26,6 +26,7 @@ const form = reactive({
   videoUrl: '',
   videoIframe: '',
   moduleId: null as string | null,
+  dripDays: null as number | null,
 })
 
 // Populate form when lesson loads
@@ -36,6 +37,7 @@ watch(lesson, (l) => {
     form.videoUrl = l.videoUrl || ''
     form.videoIframe = l.videoIframe || ''
     form.moduleId = l.moduleId || null
+    form.dripDays = l.dripDays ?? null
   }
 }, { immediate: true })
 
@@ -243,6 +245,32 @@ const showPreview = ref(false)
                   v-html="form.videoIframe"
                 />
               </div>
+            </div>
+          </div>
+
+          <!-- Drip Content Panel -->
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 px-4 py-3">
+            <div class="flex items-center gap-2 mb-3">
+              <Clock class="h-4 w-4 text-slate-500" />
+              <span class="font-medium text-slate-900">Drip content</span>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm text-slate-600">
+                Udostępnij po
+              </label>
+              <div class="flex items-center gap-2">
+                <input
+                  v-model.number="form.dripDays"
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  class="input-base w-20 text-center text-sm"
+                />
+                <span class="text-sm text-slate-600">dniach od zapisania</span>
+              </div>
+              <p class="text-xs text-slate-500">
+                Zostaw puste lub 0, aby udostępnić od razu.
+              </p>
             </div>
           </div>
 

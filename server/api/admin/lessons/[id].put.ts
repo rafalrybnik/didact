@@ -10,6 +10,7 @@ const updateLessonSchema = z.object({
   videoUrl: optionalUrl,
   videoIframe: z.string().optional().nullable(),
   order: z.number().int().min(0).optional(),
+  dripDays: z.number().int().min(0).optional().nullable(),
 })
 
 export default defineEventHandler(async (event) => {

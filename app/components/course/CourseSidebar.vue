@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { CheckCircle, Circle, Lock, ChevronDown, ChevronRight } from 'lucide-vue-next'
+import { CheckCircle, Circle, Lock, Clock, ChevronDown, ChevronRight } from 'lucide-vue-next'
 
 interface Lesson {
   id: string
   title: string
   completed: boolean
   unlocked: boolean
+  dripLocked?: boolean
+  unlockDate?: string | null
 }
 
 interface Module {
@@ -59,6 +61,26 @@ function isModuleExpanded(moduleId: string): boolean {
 function getModuleProgress(module: Module): number {
   const completed = module.lessons.filter(l => l.completed).length
   return Math.round((completed / module.lessons.length) * 100)
+}
+
+function formatUnlockDate(dateString: string | null | undefined): string {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long' })
+}
+
+function getLessonIcon(lesson: Lesson) {
+  if (lesson.completed) return CheckCircle
+  if (lesson.dripLocked) return Clock
+  if (!lesson.unlocked) return Lock
+  return Circle
+}
+
+function getLessonIconClass(lesson: Lesson): string {
+  if (lesson.completed) return 'text-green-500'
+  if (lesson.dripLocked) return 'text-amber-500'
+  if (!lesson.unlocked) return 'text-slate-600'
+  return 'text-slate-400'
 }
 </script>
 
@@ -116,15 +138,16 @@ function getModuleProgress(module: Module): number {
                   ? 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
                   : 'text-slate-500 cursor-not-allowed',
             ]"
+            :title="lesson.dripLocked ? `Dostępne ${formatUnlockDate(lesson.unlockDate)}` : undefined"
           >
             <component
-              :is="lesson.completed ? CheckCircle : lesson.unlocked ? Circle : Lock"
-              :class="[
-                'h-4 w-4 flex-shrink-0',
-                lesson.completed ? 'text-green-500' : lesson.unlocked ? 'text-slate-400' : 'text-slate-600',
-              ]"
+              :is="getLessonIcon(lesson)"
+              :class="['h-4 w-4 flex-shrink-0', getLessonIconClass(lesson)]"
             />
-            <span class="truncate">{{ lesson.title }}</span>
+            <span class="flex-1 truncate">{{ lesson.title }}</span>
+            <span v-if="lesson.dripLocked" class="text-xs text-amber-500 flex-shrink-0">
+              {{ formatUnlockDate(lesson.unlockDate) }}
+            </span>
           </NuxtLink>
         </div>
       </div>
@@ -143,15 +166,16 @@ function getModuleProgress(module: Module): number {
                 ? 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
                 : 'text-slate-500 cursor-not-allowed',
           ]"
+          :title="lesson.dripLocked ? `Dostępne ${formatUnlockDate(lesson.unlockDate)}` : undefined"
         >
           <component
-            :is="lesson.completed ? CheckCircle : lesson.unlocked ? Circle : Lock"
-            :class="[
-              'h-4 w-4 flex-shrink-0',
-              lesson.completed ? 'text-green-500' : lesson.unlocked ? 'text-slate-400' : 'text-slate-600',
-            ]"
+            :is="getLessonIcon(lesson)"
+            :class="['h-4 w-4 flex-shrink-0', getLessonIconClass(lesson)]"
           />
-          <span class="truncate">{{ lesson.title }}</span>
+          <span class="flex-1 truncate">{{ lesson.title }}</span>
+          <span v-if="lesson.dripLocked" class="text-xs text-amber-500 flex-shrink-0">
+            {{ formatUnlockDate(lesson.unlockDate) }}
+          </span>
         </NuxtLink>
       </div>
     </nav>

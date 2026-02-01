@@ -38,96 +38,46 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 
 ---
 
+## UKOŃCZONE (NOWA SERIA) ✅
+
+### FAZA A: Infrastruktura Email ✅
+
+- [x] `server/utils/email.ts` - Klient email SMTP (Nodemailer)
+- [x] `docker-compose.yml` - Mailhog dla lokalnych testów
+- [x] `.env.example` - Zmienne SMTP
+- [x] `server/utils/emailTemplates.ts` - Szablony HTML
+
+### FAZA B: Reset hasła (REQ-002) ✅
+
+- [x] `prisma/schema.prisma` - Model `PasswordResetToken`
+- [x] Migracja
+- [x] `server/api/auth/forgot-password.post.ts` - Generowanie tokenu + wysyłka email
+- [x] `server/api/auth/reset-password.post.ts` - Walidacja tokenu + zmiana hasła
+- [x] `app/pages/forgot-password.vue` - Formularz "Zapomniałem hasła"
+- [x] `app/pages/reset-password.vue` - Formularz nowego hasła
+- [x] `app/pages/login.vue` - Link do forgot-password
+
+### FAZA C: Powiadomienia email ✅
+
+- [x] `server/utils/emailTemplates.ts` - Template: Welcome (po zakupie)
+- [x] `server/api/webhooks/stripe.post.ts` - Wysyłka welcome email po płatności
+- [x] `server/utils/emailTemplates.ts` - Template: Homework graded
+- [x] `server/api/admin/submissions/[id].put.ts` - Wysyłka email po ocenie
+- [x] `server/utils/emailTemplates.ts` - Template: Access granted
+
+### FAZA D: Drip Content ✅
+
+- [x] `prisma/schema.prisma` - Pole `Lesson.dripDays` (Int?)
+- [x] Migracja
+- [x] `app/pages/admin/courses/[id]/lessons/[lessonId].vue` - Input "Dni od zapisania"
+- [x] `server/api/admin/lessons/[id].put.ts` - Zapis dripDays
+- [x] `server/api/courses/[slug]/lessons/[lessonId].get.ts` - Walidacja dostępu
+- [x] `server/api/courses/[slug]/curriculum.get.ts` - Status "locked until" per lekcja
+- [x] `app/components/course/CourseSidebar.vue` - UI: ikona zegara + data odblokowania
+
+---
+
 ## DO ZROBIENIA 🟢
-
-### FAZA A: Infrastruktura Email (wymagane dla pozostałych)
-
-#### A.1 System email
-**Cel:** Podstawowa infrastruktura do wysyłania maili. Póki co używamy zwykłego SMTP. Dane dostępowe w configu .env. Lokalnie do testów używamy Mailhog.
-
-| Krok | Plik | Opis |
-|------|------|------|
-| 1 | `server/utils/email.ts` | Klient email SMTP (Nodemailer)|
-| 2 | `.env.example` | Dodanie zmiennych z danymi dostępowymi |
-| 3 | `server/utils/emailTemplates.ts` | Bazowy szablon HTML |
-
-**Zależności:** Konto SMTP
-
-
-
----
-
-### FAZA B: Reset hasła (REQ-002)
-
-**Cel:** Użytkownicy mogą resetować hasło przez email.
-
-| Krok | Plik | Opis |
-|------|------|------|
-| 1 | `prisma/schema.prisma` | Model `PasswordResetToken` |
-| 2 | Migracja | `npx prisma migrate dev` |
-| 3 | `server/api/auth/forgot-password.post.ts` | Generowanie tokenu + wysyłka email |
-| 4 | `server/api/auth/reset-password.post.ts` | Walidacja tokenu + zmiana hasła |
-| 5 | `app/pages/forgot-password.vue` | Formularz "Zapomniałem hasła" |
-| 6 | `app/pages/reset-password.vue` | Formularz nowego hasła |
-| 7 | `app/pages/login.vue` | Link do forgot-password |
-
-**Schemat bazy:**
-```prisma
-model PasswordResetToken {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-}
-```
-
-**Zależności:** Faza A (email)
-
----
-
-### FAZA C: Powiadomienia email
-
-**Cel:** Automatyczne maile przy kluczowych wydarzeniach.
-
-| Krok | Plik | Opis |
-|------|------|------|
-| 1 | `server/utils/emailTemplates.ts` | Template: Welcome (po zakupie) |
-| 2 | `server/api/webhooks/stripe.post.ts` | Wysyłka welcome email po płatności |
-| 3 | `server/utils/emailTemplates.ts` | Template: Homework graded |
-| 4 | `server/api/admin/submissions/[id].put.ts` | Wysyłka email po ocenie |
-| 5 | `server/utils/emailTemplates.ts` | Template: Access granted |
-
-**Zależności:** Faza A (email)
-
----
-
-### FAZA D: Drip Content
-
-**Cel:** Automatyczne udostępnianie lekcji według harmonogramu.
-
-| Krok | Plik | Opis |
-|------|------|------|
-| 1 | `prisma/schema.prisma` | Pole `Lesson.dripDays` (Int?) |
-| 2 | Migracja | `npx prisma migrate dev` |
-| 3 | `app/pages/admin/courses/[id]/lessons/[lessonId].vue` | Input "Dni od zapisania" |
-| 4 | `server/api/admin/lessons/[lessonId].put.ts` | Zapis dripDays |
-| 5 | `server/api/courses/[slug]/lessons/[lessonId].get.ts` | Walidacja dostępu (enrollment date + dripDays) |
-| 6 | `server/api/courses/[slug]/curriculum.get.ts` | Status "locked until" per lekcja |
-| 7 | `app/components/course/Sidebar.vue` | UI: ikona zamka + data odblokowania |
-
-**Schemat:**
-```prisma
-model Lesson {
-  // ... existing fields
-  dripDays  Int?  // null = dostępna od razu
-}
-```
-
-**Logika:** `lesson.dripDays ? enrollment.createdAt + dripDays <= now : true`
-
----
 
 ### FAZA E: Dashboard z analityką
 
@@ -150,29 +100,19 @@ model Lesson {
 
 ---
 
-## KOLEJNOŚĆ IMPLEMENTACJI
+## STATUS IMPLEMENTACJI
 
 ```
-FAZA A (Email)
+FAZA A (Email) ✅
     ↓
-FAZA B (Reset hasła) ←── wymaga A
+FAZA B (Reset hasła) ✅
     ↓
-FAZA C (Powiadomienia) ←── wymaga A
+FAZA C (Powiadomienia) ✅
     ↓
-FAZA D (Drip Content) ←── niezależna
+FAZA D (Drip Content) ✅
     ↓
-FAZA E (Dashboard) ←── niezależna
+FAZA E (Dashboard) ← w trakcie
 ```
-
-**Szacowany czas:**
-| Faza | Czas |
-|------|------|
-| A | 1-2h |
-| B | 2-3h |
-| C | 2-3h |
-| D | 3-4h |
-| E | 4-5h |
-| **Razem** | **12-17h** |
 
 ---
 
