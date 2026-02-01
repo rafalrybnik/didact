@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import { ShoppingCart, CheckCircle, Clock, XCircle, RefreshCw } from 'lucide-vue-next'
+import { ShoppingCart, CheckCircle, Clock, XCircle, RefreshCw, FileText, ChevronDown, ChevronUp } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'admin',
 })
+
+interface InvoiceData {
+  name?: string
+  address?: string
+  nip?: string
+}
 
 interface Order {
   id: string
@@ -11,6 +17,7 @@ interface Order {
   currency: string
   status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED'
   createdAt: string
+  invoiceData: InvoiceData | null
   user: {
     id: string
     name: string | null
@@ -57,6 +64,23 @@ const totalRevenue = computed(() => {
 })
 
 const completedCount = computed(() => orders.value.filter(o => o.status === 'COMPLETED').length)
+
+// Expanded rows for invoice data
+const expandedOrders = ref<Set<string>>(new Set())
+
+function toggleOrder(orderId: string) {
+  const newSet = new Set(expandedOrders.value)
+  if (newSet.has(orderId)) {
+    newSet.delete(orderId)
+  } else {
+    newSet.add(orderId)
+  }
+  expandedOrders.value = newSet
+}
+
+function hasInvoiceData(order: Order): boolean {
+  return !!(order.invoiceData && (order.invoiceData.name || order.invoiceData.address || order.invoiceData.nip))
+}
 </script>
 
 <template>
@@ -110,36 +134,70 @@ const completedCount = computed(() => orders.value.filter(o => o.status === 'COM
               <th class="text-left px-4 py-3 text-sm font-medium text-slate-500">Kurs</th>
               <th class="text-left px-4 py-3 text-sm font-medium text-slate-500">Kwota</th>
               <th class="text-left px-4 py-3 text-sm font-medium text-slate-500">Status</th>
+              <th class="text-left px-4 py-3 text-sm font-medium text-slate-500">Faktura</th>
               <th class="text-left px-4 py-3 text-sm font-medium text-slate-500">Data</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-200">
-            <tr v-for="order in orders" :key="order.id" class="hover:bg-slate-50">
-              <td class="px-4 py-3">
-                <div>
-                  <p class="font-medium text-slate-900">{{ order.user.name || 'Brak imienia' }}</p>
-                  <p class="text-sm text-slate-500">{{ order.user.email }}</p>
-                </div>
-              </td>
-              <td class="px-4 py-3">
-                <p class="text-slate-900">{{ order.course.title }}</p>
-              </td>
-              <td class="px-4 py-3">
-                <p class="font-medium text-slate-900">{{ formatPrice(order.amount, order.currency) }}</p>
-              </td>
-              <td class="px-4 py-3">
-                <span
-                  class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium"
-                  :class="[statusInfo(order.status).bg, statusInfo(order.status).color]"
-                >
-                  <component :is="statusInfo(order.status).icon" class="w-3 h-3" />
-                  {{ statusInfo(order.status).label }}
-                </span>
-              </td>
-              <td class="px-4 py-3 text-sm text-slate-500">
-                {{ new Date(order.createdAt).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric' }) }}
-              </td>
-            </tr>
+            <template v-for="order in orders" :key="order.id">
+              <tr class="hover:bg-slate-50">
+                <td class="px-4 py-3">
+                  <div>
+                    <p class="font-medium text-slate-900">{{ order.user.name || 'Brak imienia' }}</p>
+                    <p class="text-sm text-slate-500">{{ order.user.email }}</p>
+                  </div>
+                </td>
+                <td class="px-4 py-3">
+                  <p class="text-slate-900">{{ order.course.title }}</p>
+                </td>
+                <td class="px-4 py-3">
+                  <p class="font-medium text-slate-900">{{ formatPrice(order.amount, order.currency) }}</p>
+                </td>
+                <td class="px-4 py-3">
+                  <span
+                    class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium"
+                    :class="[statusInfo(order.status).bg, statusInfo(order.status).color]"
+                  >
+                    <component :is="statusInfo(order.status).icon" class="w-3 h-3" />
+                    {{ statusInfo(order.status).label }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <button
+                    v-if="hasInvoiceData(order)"
+                    class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded transition-colors"
+                    @click="toggleOrder(order.id)"
+                  >
+                    <FileText class="w-3 h-3" />
+                    Dane
+                    <component :is="expandedOrders.has(order.id) ? ChevronUp : ChevronDown" class="w-3 h-3" />
+                  </button>
+                  <span v-else class="text-sm text-slate-400">—</span>
+                </td>
+                <td class="px-4 py-3 text-sm text-slate-500">
+                  {{ new Date(order.createdAt).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric' }) }}
+                </td>
+              </tr>
+              <!-- Invoice data row -->
+              <tr v-if="expandedOrders.has(order.id) && hasInvoiceData(order)">
+                <td colspan="6" class="px-4 py-3 bg-slate-50">
+                  <div class="text-sm space-y-1">
+                    <p v-if="order.invoiceData?.name">
+                      <span class="font-medium text-slate-600">Nazwa:</span>
+                      <span class="text-slate-900 ml-2">{{ order.invoiceData.name }}</span>
+                    </p>
+                    <p v-if="order.invoiceData?.nip">
+                      <span class="font-medium text-slate-600">NIP:</span>
+                      <span class="text-slate-900 ml-2">{{ order.invoiceData.nip }}</span>
+                    </p>
+                    <p v-if="order.invoiceData?.address">
+                      <span class="font-medium text-slate-600">Adres:</span>
+                      <span class="text-slate-900 ml-2 whitespace-pre-line">{{ order.invoiceData.address }}</span>
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>

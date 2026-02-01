@@ -56,25 +56,29 @@ async function handlePurchase() {
     return
   }
 
+  // For paid courses, redirect to checkout page with invoice option
+  if (course.value && course.value.price > 0) {
+    navigateTo(`/checkout/${slug}`)
+    return
+  }
+
+  // For free courses, enroll directly
   isPurchasing.value = true
   try {
     const response = await $fetch<{
       success: boolean
       free: boolean
-      sessionUrl?: string
       redirectUrl?: string
     }>('/api/checkout/create-session', {
       method: 'POST',
       body: { courseSlug: slug },
     })
 
-    if (response.free) {
+    if (response.free && response.redirectUrl) {
       navigateTo(response.redirectUrl)
-    } else if (response.sessionUrl) {
-      window.location.href = response.sessionUrl
     }
   } catch (e: any) {
-    showError('Błąd', e.data?.message || 'Nie udało się rozpocząć zakupu')
+    showError('Błąd', e.data?.message || 'Nie udało się zapisać na kurs')
   } finally {
     isPurchasing.value = false
   }

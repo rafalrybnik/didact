@@ -5,9 +5,51 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 
 ---
 
-## PRIORYTET 1: Krytyczne dla produkcji
+## PRIORYTET 1: Funkcjonalność i UX (Lokalne)
+*Cel: Domykanie funkcjonalności aplikacji i poprawa UX Admina bez zależności od zewnętrznych serwisów.*
 
-### 1.1 Reset hasła (REQ-002)
+### 1.1 Dane do faktury (REQ-051)
+**Opis:** Przed przekierowaniem do Stripe, użytkownik może zaznaczyć "Chcę fakturę" i podać dane. Jest to kluczowe dla sprzedaży B2B.
+
+- [ ] `app/pages/checkout/[slug].vue` - strona pośrednia przed Stripe:
+  - Checkbox "Chcę fakturę"
+  - Textarea na dane do faktury (bez walidacji)
+  - Przycisk "Przejdź do płatności"
+- [ ] Aktualizacja `server/api/checkout/create-session.post.ts` - przyjmowanie `invoiceData`
+- [ ] Wyświetlanie danych faktury w `/admin/orders` przy zamówieniu
+
+### 1.2 Edytor WYSIWYG (RichTextEditor)
+**Opis:** Nowoczesny, prawdziwy edytor WYSIWYG (nie zwykła textarea z HTML). Musi być zaimplementowany jako **reusable component**, używany spójnie w całym systemie.
+
+- [ ] `app/components/admin/RichTextEditor.vue` - implementacja oparta na TipTap.
+- [ ] Funkcje: nagłówki, bold/italic, listy punktowane/numerowane, linki, blok cytatu.
+- [ ] Stylizacja: "Notion-like" lub czysty, nowoczesny wygląd pasujący do `main.css`.
+- [ ] Zastosowanie komponentu w:
+  - [ ] Edycja opisu sprzedażowego kursu (`sales_description`)
+  - [ ] Edycja treści lekcji (`content_html`)
+  - [ ] Edycja stron CMS (`Page.contentHtml`)
+
+### 1.3 Dynamiczne linki w stopce (REQ-062)
+**Opis:** Stopka powinna zawierać linki do opublikowanych stron CMS (np. Regulamin, Polityka Prywatności).
+
+- [ ] `server/api/public/pages.get.ts` - lista opublikowanych stron (slug, title)
+- [ ] Aktualizacja `app/layouts/public.vue` - dynamiczne pobieranie i wyświetlanie linków
+- [ ] Cache linków (composable lub useState)
+
+### 1.4 Materiały do pobrania (REQ-011 - częściowe)
+**Opis:** Admin może dodać pliki PDF/ZIP do lekcji jako materiały do pobrania.
+
+- [ ] Rozszerzenie modelu `Lesson` - pole `attachments` (JSON array lub relacja)
+- [ ] UI w edytorze lekcji - upload wielu plików
+- [ ] Wyświetlanie listy załączników w playerze kursu
+- [ ] Endpoint pobierania z weryfikacją dostępu
+
+---
+
+## PRIORYTET 2: Infrastruktura Produkcyjna (Email & Storage)
+*Cel: Integracje wymagające zewnętrznych kluczy API (SMTP, S3). Realizowane w drugiej kolejności.*
+
+### 2.1 Reset hasła (REQ-002)
 **Opis:** Użytkownicy muszą móc zresetować hasło przez email.
 
 - [ ] `server/api/auth/forgot-password.post.ts` - generowanie tokenu reset
@@ -17,9 +59,7 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 - [ ] Model `PasswordResetToken` w schema.prisma (token, userId, expiresAt)
 - [ ] Migracja DB
 
-**Zależności:** Wymaga implementacji systemu email (1.2)
-
-### 1.2 System email (REQ-001, Notifications)
+### 2.2 System email (REQ-001, Notifications)
 **Opis:** Email jest wymagany do: reset hasła, powitanie po zakupie, powiadomienia o ocenie zadania.
 
 - [ ] `server/utils/email.ts` - klient email (Resend lub Nodemailer)
@@ -29,7 +69,7 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 - [ ] Template: Homework graded (powiadomienie o ocenie)
 - [ ] Template: Access granted (gdy istniejący user kupuje kolejny kurs)
 
-### 1.3 Produkcyjny storage (pliki)
+### 2.3 Produkcyjny storage (pliki)
 **Opis:** Railway nie ma persistent storage. Thumbnails i pliki homework muszą być na zewnętrznym storage.
 
 - [ ] Konfiguracja Cloudflare R2 lub AWS S3
@@ -40,43 +80,7 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 
 ---
 
-## PRIORYTET 2: Wymagania PRD/FRS (funkcjonalne)
-
-### 2.1 Dane do faktury (REQ-051)
-**Opis:** Przed przekierowaniem do Stripe, użytkownik może zaznaczyć "Chcę fakturę" i podać dane.
-
-- [ ] `app/pages/checkout/[slug].vue` - strona pośrednia przed Stripe:
-  - Checkbox "Chcę fakturę"
-  - Textarea na dane do faktury (bez walidacji)
-  - Przycisk "Przejdź do płatności"
-- [ ] Aktualizacja `server/api/checkout/create-session.post.ts` - przyjmowanie `invoiceData`
-- [ ] Wyświetlanie danych faktury w `/admin/orders` przy zamówieniu
-
-### 2.2 Dynamiczne linki w stopce (REQ-062)
-**Opis:** Stopka powinna zawierać linki do opublikowanych stron CMS (np. Regulamin, Polityka Prywatności).
-
-- [ ] `server/api/public/pages.get.ts` - lista opublikowanych stron (slug, title)
-- [ ] Aktualizacja `app/layouts/public.vue` - dynamiczne pobieranie i wyświetlanie linków
-- [ ] Cache linków (composable lub useState)
-
-### 2.3 Materiały do pobrania (REQ-011 - częściowe)
-**Opis:** Admin może dodać pliki PDF/ZIP do lekcji jako materiały do pobrania.
-
-- [ ] Rozszerzenie modelu `Lesson` - pole `attachments` (JSON array lub relacja)
-- [ ] UI w edytorze lekcji - upload wielu plików
-- [ ] Wyświetlanie listy załączników w playerze kursu
-- [ ] Endpoint pobierania z weryfikacją dostępu
-
----
-
 ## PRIORYTET 3: Ulepszenia UX/DX
-
-### 3.1 Edytor WYSIWYG (RichTextEditor)
-**Opis:** Pełnoprawny edytor dla sales_description i content_html.
-
-- [ ] `app/components/admin/RichTextEditor.vue` - TipTap lub podobny
-- [ ] Obsługa: nagłówki, bold/italic, listy, linki, obrazki
-- [ ] Integracja z edytorem kursu i stron
 
 ### 3.2 CSRF Protection
 **Opis:** Dodatkowa warstwa bezpieczeństwa via nuxt-security.
@@ -126,9 +130,9 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 
 ## Rekomendacja
 
-Dla MVP produkcyjnego wymagane są zadania z **Priorytetu 1**:
-1. Reset hasła (krytyczne dla użytkowników)
-2. System email (wymagany przez reset hasła i notyfikacje)
-3. Produkcyjny storage (bez tego pliki znikną po restarcie)
+Dla MVP produkcyjnego realizujemy zadania w następującej kolejności:
 
-Priorytet 2 i 3 mogą być dodane iteracyjnie po launchu.
+1.  **Priorytet 1 (Funkcjonalność i UX):** Domykamy aplikację, aby była w pełni funkcjonalna i przyjazna w obsłudze (Dane faktury, WYSIWYG). To pozwala na pełne testowanie flow zakupowego i edycyjnego.
+2.  **Priorytet 2 (Infrastruktura):** Dopiero gdy aplikacja jest gotowa, konfigurujemy zewnętrzne usługi (Email, S3, Reset hasła).
+
+**Zadanie na TERAZ:** Realizacja Priorytetu 1 (1.1 - 1.4).

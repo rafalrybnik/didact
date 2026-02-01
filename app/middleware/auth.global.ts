@@ -36,4 +36,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return navigateTo('/login')
     }
   }
+
+  // Checkout routes - require login
+  if (to.path.startsWith('/checkout')) {
+    if (!isLoggedIn.value) {
+      return navigateTo('/login')
+    }
+  }
 })
