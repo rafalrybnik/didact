@@ -38,223 +38,161 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 
 ---
 
-## DO ZROBIENIA
+## DO ZROBIENIA 🟢
 
-### PRIORYTET 2: Infrastruktura Produkcyjna (Email & Auth)
+### FAZA A: Infrastruktura Email (wymagane dla pozostałych)
 
-#### 2.1 Reset hasła (REQ-002)
-- [ ] `server/api/auth/forgot-password.post.ts` - generowanie tokenu
-- [ ] `server/api/auth/reset-password.post.ts` - zmiana hasła
-- [ ] `app/pages/forgot-password.vue` - formularz
-- [ ] `app/pages/reset-password.vue` - formularz z tokenem
-- [ ] Model `PasswordResetToken` w Prisma
-- [ ] Migracja DB
+#### A.1 System email
+**Cel:** Podstawowa infrastruktura do wysyłania maili.
 
-#### 2.2 System email (REQ-001, Notifications)
-- [ ] `server/utils/email.ts` - klient (Resend lub Nodemailer)
-- [ ] Template: Welcome email (po zakupie)
-- [ ] Template: Password reset
-- [ ] Template: Homework graded
-- [ ] Template: Access granted
+| Krok | Plik | Opis |
+|------|------|------|
+| 1 | `server/utils/email.ts` | Klient email z Resend SDK |
+| 2 | `.env.example` | Dodanie `RESEND_API_KEY` |
+| 3 | `server/utils/emailTemplates.ts` | Bazowy szablon HTML |
+
+**Zależności:** Konto Resend, domena do wysyłki
 
 ---
 
-## PROPOZYCJE NOWYCH FUNKCJI (do akceptacji)
+### FAZA B: Reset hasła (REQ-002)
 
-Poniżej 20 propozycji nowych funkcji podzielonych na kategorie. Po akceptacji zostaną dodane do backlogu z priorytetami.
+**Cel:** Użytkownicy mogą resetować hasło przez email.
 
-### A. Doświadczenie ucznia (Student Experience)
+| Krok | Plik | Opis |
+|------|------|------|
+| 1 | `prisma/schema.prisma` | Model `PasswordResetToken` |
+| 2 | Migracja | `npx prisma migrate dev` |
+| 3 | `server/api/auth/forgot-password.post.ts` | Generowanie tokenu + wysyłka email |
+| 4 | `server/api/auth/reset-password.post.ts` | Walidacja tokenu + zmiana hasła |
+| 5 | `app/pages/forgot-password.vue` | Formularz "Zapomniałem hasła" |
+| 6 | `app/pages/reset-password.vue` | Formularz nowego hasła |
+| 7 | `app/pages/login.vue` | Link do forgot-password |
 
-#### A1. Certyfikaty ukończenia kursu
-**Opis:** Automatyczne generowanie certyfikatów PDF po ukończeniu kursu.
-**Zakres:**
-- Konfigurowalny szablon certyfikatu w panelu admin
-- Dane: imię ucznia, nazwa kursu, data ukończenia
-- Generowanie PDF (np. puppeteer lub jsPDF)
-- Pobieranie z profilu użytkownika
-- Opcjonalny unikalny numer certyfikatu z weryfikacją
+**Schemat bazy:**
+```prisma
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+```
 
-#### A2. Notatki ucznia
-**Opis:** Możliwość robienia notatek podczas oglądania lekcji.
-**Zakres:**
-- Panel notatek przy playerze lekcji
-- Zapisywanie notatek per lekcja
-- Eksport notatek do PDF/Markdown
-- Wyszukiwarka notatek
+**Zależności:** Faza A (email)
 
-#### A3. Zakładki i ulubione lekcje
-**Opis:** Oznaczanie lekcji do późniejszego powrotu.
-**Zakres:**
-- Przycisk zakładki przy każdej lekcji
-- Lista zakładek w profilu użytkownika
-- Szybki dostęp z dashboardu
+---
 
-#### A4. Tryb ciemny (Dark Mode)
-**Opis:** Opcja przełączania między jasnym a ciemnym motywem.
-**Zakres:**
-- Toggle w ustawieniach użytkownika
-- Zapisywanie preferencji
-- Automatyczne wykrywanie preferencji systemowych
-- Stylizacja wszystkich komponentów
+### FAZA C: Powiadomienia email
 
-#### A5. Powiadomienia push (Web Push)
-**Opis:** Powiadomienia o nowych lekcjach, ocenionych zadaniach, odpowiedziach.
-**Zakres:**
-- Service Worker dla push notifications
-- Ustawienia powiadomień per typ
-- Endpoint do wysyłania powiadomień
-- Integracja z systemem email (fallback)
+**Cel:** Automatyczne maile przy kluczowych wydarzeniach.
 
-### B. Funkcje kursu (Course Features)
+| Krok | Plik | Opis |
+|------|------|------|
+| 1 | `server/utils/emailTemplates.ts` | Template: Welcome (po zakupie) |
+| 2 | `server/api/webhooks/stripe.post.ts` | Wysyłka welcome email po płatności |
+| 3 | `server/utils/emailTemplates.ts` | Template: Homework graded |
+| 4 | `server/api/admin/submissions/[id].put.ts` | Wysyłka email po ocenie |
+| 5 | `server/utils/emailTemplates.ts` | Template: Access granted |
 
-#### B6. Drip Content (Scheduled Release)
-**Opis:** Automatyczne udostępnianie lekcji według harmonogramu.
-**Zakres:**
-- Konfiguracja "dni od zapisania" per lekcja
-- Harmonogram oparty na dacie
-- UI pokazujące kiedy lekcja będzie dostępna
-- Powiadomienia o nowych lekcjach
+**Zależności:** Faza A (email)
 
-#### B7. Prerekvizity lekcji
-**Opis:** Wymaganie ukończenia konkretnych lekcji przed dostępem do następnych.
-**Zakres:**
-- Relacja "wymaga lekcji X" w edytorze
-- Walidacja dostępu do lekcji
-- Wizualna mapa zależności (opcjonalne)
+---
 
-#### B8. Wersjonowanie kursów
-**Opis:** Możliwość aktualizacji kursu z zachowaniem dostępu do starej wersji.
-**Zakres:**
-- Kopiowanie kursu jako nowa wersja
-- Migracja uczniów do nowej wersji (opcjonalna)
-- Historia zmian
+### FAZA D: Drip Content
 
-#### B9. Pakiety kursów (Bundles)
-**Opis:** Sprzedaż wielu kursów w pakiecie ze zniżką.
-**Zakres:**
-- Model Bundle (kursy + cena)
-- Strona sprzedażowa pakietu
-- Checkout dla pakietu
-- Panel admin do zarządzania
+**Cel:** Automatyczne udostępnianie lekcji według harmonogramu.
 
-#### B10. Kod dostępu / kupony
-**Opis:** Jednorazowe kody dające dostęp do kursu lub zniżkę.
-**Zakres:**
-- Model Coupon (kod, typ rabatu, limit użyć)
-- Walidacja przy checkout
-- Raporty użycia kuponów
-- Kody 100% zniżki = darmowy dostęp
+| Krok | Plik | Opis |
+|------|------|------|
+| 1 | `prisma/schema.prisma` | Pole `Lesson.dripDays` (Int?) |
+| 2 | Migracja | `npx prisma migrate dev` |
+| 3 | `app/pages/admin/courses/[id]/lessons/[lessonId].vue` | Input "Dni od zapisania" |
+| 4 | `server/api/admin/lessons/[lessonId].put.ts` | Zapis dripDays |
+| 5 | `server/api/courses/[slug]/lessons/[lessonId].get.ts` | Walidacja dostępu (enrollment date + dripDays) |
+| 6 | `server/api/courses/[slug]/curriculum.get.ts` | Status "locked until" per lekcja |
+| 7 | `app/components/course/Sidebar.vue` | UI: ikona zamka + data odblokowania |
 
-### C. Panel administracyjny (Admin Features)
+**Schemat:**
+```prisma
+model Lesson {
+  // ... existing fields
+  dripDays  Int?  // null = dostępna od razu
+}
+```
 
-#### C11. Dashboard z analityką
-**Opis:** Rozbudowany dashboard z wykresami i statystykami.
-**Zakres:**
-- Wykres sprzedaży (dzienny/tygodniowy/miesięczny)
+**Logika:** `lesson.dripDays ? enrollment.createdAt + dripDays <= now : true`
+
+---
+
+### FAZA E: Dashboard z analityką
+
+**Cel:** Rozbudowany dashboard z wykresami dla admina.
+
+| Krok | Plik | Opis |
+|------|------|------|
+| 1 | `npm install chart.js vue-chartjs` | Instalacja Chart.js |
+| 2 | `server/api/admin/analytics/sales.get.ts` | Dane sprzedaży (ostatnie 30 dni) |
+| 3 | `server/api/admin/analytics/courses.get.ts` | Statystyki kursów (enrollments, completion) |
+| 4 | `server/api/admin/analytics/users.get.ts` | Aktywni użytkownicy |
+| 5 | `app/components/admin/SalesChart.client.vue` | Wykres sprzedaży |
+| 6 | `app/components/admin/StatsCards.vue` | Karty ze statystykami |
+| 7 | `app/pages/admin/index.vue` | Integracja komponentów |
+
+**Metryki:**
+- Przychód dzienny/tygodniowy/miesięczny
+- Liczba nowych zapisów
 - Najpopularniejsze kursy
 - Wskaźnik ukończenia kursów
-- Aktywni użytkownicy
-- Integracja z Chart.js lub similar
-
-#### C12. Export danych (GDPR)
-**Opis:** Eksport danych użytkownika zgodnie z GDPR.
-**Zakres:**
-- Endpoint eksportu danych użytkownika
-- Format JSON/CSV
-- Żądanie eksportu z profilu
-- Usunięcie konta (prawo do bycia zapomnianym)
-
-#### C13. Bulk operations
-**Opis:** Masowe operacje na kursach, użytkownikach, zamówieniach.
-**Zakres:**
-- Zaznaczanie wielu rekordów
-- Bulk delete, archive, publish
-- Bulk email do uczniów kursu
-- Import użytkowników z CSV
-
-#### C14. Audit log
-**Opis:** Historia działań administratorów.
-**Zakres:**
-- Logowanie wszystkich akcji admin
-- Filtrowanie po typie, dacie, użytkowniku
-- Przechowywanie przez X dni
-
-#### C15. Role i uprawnienia
-**Opis:** Rozbudowany system ról (super admin, content editor, support).
-**Zakres:**
-- Tabela ról i uprawnień
-- Przypisywanie ról użytkownikom
-- Middleware sprawdzający uprawnienia
-- UI zarządzania rolami
-
-### D. Komunikacja i społeczność
-
-#### D16. Komentarze pod lekcjami
-**Opis:** Dyskusja pod każdą lekcją.
-**Zakres:**
-- Model Comment (treść, autor, lekcja)
-- Zagnieżdżone odpowiedzi
-- Moderacja (usuwanie, edycja)
-- Powiadomienia o odpowiedziach
-
-#### D17. Forum kursu
-**Opis:** Dedykowane forum dla uczestników kursu.
-**Zakres:**
-- Kategorie tematyczne
-- Wątki i odpowiedzi
-- Pinowanie ważnych wątków
-- Wyszukiwarka
-
-#### D18. Live Q&A / Webinary
-**Opis:** Integracja z narzędziami do live streaming.
-**Zakres:**
-- Harmonogram webinarów
-- Integracja z Zoom/YouTube Live
-- Nagrania dostępne jako lekcje
-- Powiadomienia o nadchodzących sesjach
-
-### E. Monetyzacja i marketing
-
-#### E19. Subskrypcje (recurring payments)
-**Opis:** Model subskrypcyjny zamiast jednorazowej płatności.
-**Zakres:**
-- Plany subskrypcyjne w Stripe
-- Zarządzanie subskrypcją (anulowanie, zmiana planu)
-- Dostęp do kursów na czas subskrypcji
-- Dunning management (nieudane płatności)
-
-#### E20. Program afiliacyjny
-**Opis:** System poleceń z prowizją.
-**Zakres:**
-- Unikalne linki afiliacyjne
-- Śledzenie konwersji
-- Wypłaty prowizji
-- Panel afilianta
+- Aktywni użytkownicy (ostatnie 7 dni)
 
 ---
 
-## Priorytetyzacja (propozycja)
+## KOLEJNOŚĆ IMPLEMENTACJI
 
-| ID | Funkcja | Priorytet | Złożoność | Wartość |
-|----|---------|-----------|-----------|---------|
-| A1 | Certyfikaty | Wysoki | Średnia | Wysoka |
-| A4 | Dark Mode | Średni | Niska | Średnia |
-| B10 | Kupony/kody | Wysoki | Średnia | Wysoka |
-| C11 | Dashboard analityka | Wysoki | Średnia | Wysoka |
-| C12 | Export GDPR | Wysoki | Niska | Wysoka |
-| D16 | Komentarze | Średni | Średnia | Średnia |
-| B6 | Drip Content | Średni | Średnia | Średnia |
-| A2 | Notatki | Niski | Średnia | Średnia |
-| E19 | Subskrypcje | Średni | Wysoka | Wysoka |
-| B9 | Pakiety | Niski | Średnia | Średnia |
+```
+FAZA A (Email)
+    ↓
+FAZA B (Reset hasła) ←── wymaga A
+    ↓
+FAZA C (Powiadomienia) ←── wymaga A
+    ↓
+FAZA D (Drip Content) ←── niezależna
+    ↓
+FAZA E (Dashboard) ←── niezależna
+```
+
+**Szacowany czas:**
+| Faza | Czas |
+|------|------|
+| A | 1-2h |
+| B | 2-3h |
+| C | 2-3h |
+| D | 3-4h |
+| E | 4-5h |
+| **Razem** | **12-17h** |
 
 ---
 
-## Następne kroki
+## ODŁOŻONE 🟡
 
-1. **Akceptacja propozycji** - wybór funkcji do implementacji
-2. **Priorytet 2** - dokończenie resetu hasła i systemu email
-3. **Wybrane funkcje** - implementacja według zaakceptowanej listy
+Funkcje do rozważenia w przyszłości (bez szczegółowego planu):
+
+| ID | Funkcja | Opis |
+|----|---------|------|
+| A1 | Certyfikaty | Generowanie PDF po ukończeniu kursu |
+| C12 | Export GDPR | Eksport danych użytkownika, usunięcie konta |
+| E20 | Program afiliacyjny | Linki polecające z prowizją |
+
+Szczegóły w archiwum: `docs/archive/REJECTED.md`
+
+---
+
+## ARCHIWUM
+
+Odrzucone funkcje zostały przeniesione do: [`docs/archive/REJECTED.md`](./docs/archive/REJECTED.md)
 
 ---
 
