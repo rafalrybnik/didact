@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs'
 import { join, extname } from 'path'
 import { randomUUID } from 'crypto'
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 
 // Storage adapter interface
 export interface StorageAdapter {
@@ -9,14 +10,12 @@ export interface StorageAdapter {
   getPublicUrl(key: string): string
 }
 
-// Local filesystem storage (for development)
+// Local filesystem storage (for development without MinIO)
 class LocalStorageAdapter implements StorageAdapter {
   private uploadDir: string
-  private publicPath: string
 
   constructor() {
     this.uploadDir = join(process.cwd(), 'public', 'uploads')
-    this.publicPath = '/api/files'
   }
 
   async upload(file: Buffer, filename: string, contentType: string): Promise<string> {
@@ -58,84 +57,102 @@ class LocalStorageAdapter implements StorageAdapter {
       'image/webp': '.webp',
       'image/svg+xml': '.svg',
       'application/pdf': '.pdf',
+      'application/zip': '.zip',
     }
     return map[contentType] || ''
   }
 }
 
-// S3-compatible storage (for production - Cloudflare R2, AWS S3, etc.)
+// S3-compatible storage (MinIO for dev, Cloudflare R2 for production)
 class S3StorageAdapter implements StorageAdapter {
-  private endpoint: string
-  private accessKey: string
-  private secretKey: string
+  private client: S3Client
   private bucket: string
   private publicUrl: string
 
   constructor() {
-    this.endpoint = process.env.STORAGE_ENDPOINT || ''
-    this.accessKey = process.env.STORAGE_ACCESS_KEY || ''
-    this.secretKey = process.env.STORAGE_SECRET_KEY || ''
-    this.bucket = process.env.STORAGE_BUCKET || ''
-    this.publicUrl = process.env.STORAGE_PUBLIC_URL || ''
+    const endpoint = process.env.STORAGE_ENDPOINT || 'http://localhost:9000'
+    const region = process.env.STORAGE_REGION || 'auto'
+    const accessKeyId = process.env.STORAGE_ACCESS_KEY || 'minioadmin'
+    const secretAccessKey = process.env.STORAGE_SECRET_KEY || 'minioadmin'
+
+    this.bucket = process.env.STORAGE_BUCKET || 'didact-uploads'
+    this.publicUrl = process.env.STORAGE_PUBLIC_URL || `${endpoint}/${this.bucket}`
+
+    this.client = new S3Client({
+      endpoint,
+      region,
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+      forcePathStyle: true, // Required for MinIO and R2
+    })
   }
 
   async upload(file: Buffer, filename: string, contentType: string): Promise<string> {
-    // Generate unique key
-    const ext = extname(filename) || ''
-    const key = `${randomUUID()}${ext}`
+    // Generate unique key with folder structure
+    const ext = extname(filename) || this.getExtensionFromContentType(contentType)
+    const folder = this.getFolderFromContentType(contentType)
+    const key = `${folder}/${randomUUID()}${ext}`
 
-    // Create S3-compatible request
-    const url = `${this.endpoint}/${this.bucket}/${key}`
-
-    const response = await fetch(url, {
-      method: 'PUT',
-      body: file,
-      headers: {
-        'Content-Type': contentType,
-        'x-amz-acl': 'public-read',
-        // Note: For production, implement proper AWS Signature v4
-        // This is simplified - use @aws-sdk/client-s3 for full implementation
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to upload file: ${response.statusText}`)
-    }
+    await this.client.send(new PutObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+      Body: file,
+      ContentType: contentType,
+    }))
 
     return key
   }
 
   async delete(key: string): Promise<void> {
-    const url = `${this.endpoint}/${this.bucket}/${key}`
-
-    const response = await fetch(url, {
-      method: 'DELETE',
-      // Note: Add proper authentication headers
-    })
-
-    if (!response.ok && response.status !== 404) {
-      throw new Error(`Failed to delete file: ${response.statusText}`)
+    try {
+      await this.client.send(new DeleteObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+      }))
+    } catch (error: any) {
+      // Ignore if file doesn't exist
+      if (error.name !== 'NoSuchKey') {
+        throw error
+      }
     }
   }
 
   getPublicUrl(key: string): string {
     return `${this.publicUrl}/${key}`
   }
+
+  private getExtensionFromContentType(contentType: string): string {
+    const map: Record<string, string> = {
+      'image/jpeg': '.jpg',
+      'image/png': '.png',
+      'image/gif': '.gif',
+      'image/webp': '.webp',
+      'image/svg+xml': '.svg',
+      'application/pdf': '.pdf',
+      'application/zip': '.zip',
+    }
+    return map[contentType] || ''
+  }
+
+  private getFolderFromContentType(contentType: string): string {
+    if (contentType.startsWith('image/')) return 'images'
+    if (contentType === 'application/pdf') return 'documents'
+    return 'files'
+  }
 }
 
 // Factory function to get appropriate storage adapter
 function createStorageAdapter(): StorageAdapter {
-  const useS3 = Boolean(
-    process.env.STORAGE_ENDPOINT &&
-    process.env.STORAGE_ACCESS_KEY &&
-    process.env.STORAGE_SECRET_KEY &&
-    process.env.STORAGE_BUCKET
-  )
+  const useS3 = Boolean(process.env.STORAGE_ENDPOINT)
 
   if (useS3) {
+    console.log('[Storage] Using S3-compatible storage')
     return new S3StorageAdapter()
   }
 
+  console.log('[Storage] Using local filesystem storage')
   return new LocalStorageAdapter()
 }
 
@@ -155,32 +172,35 @@ const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
 
 export function validateImage(file: Buffer, contentType: string): { valid: boolean; error?: string } {
   if (!ALLOWED_IMAGE_TYPES.includes(contentType)) {
-    return { valid: false, error: 'Invalid image type. Allowed: JPEG, PNG, GIF, WebP' }
+    return { valid: false, error: 'Nieprawidłowy format obrazu. Dozwolone: JPEG, PNG, GIF, WebP' }
   }
 
   if (file.length > MAX_IMAGE_SIZE) {
-    return { valid: false, error: 'Image too large. Maximum size: 5MB' }
+    return { valid: false, error: 'Obraz jest za duży. Maksymalny rozmiar: 5MB' }
   }
 
   return { valid: true }
 }
 
-const ALLOWED_FILE_TYPES = [
-  ...ALLOWED_IMAGE_TYPES,
+const ALLOWED_ATTACHMENT_TYPES = [
   'application/pdf',
-  'text/plain',
+  'application/zip',
+  'application/x-zip-compressed',
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/plain',
 ]
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+const MAX_ATTACHMENT_SIZE = 20 * 1024 * 1024 // 20MB
 
-export function validateFile(file: Buffer, contentType: string): { valid: boolean; error?: string } {
-  if (!ALLOWED_FILE_TYPES.includes(contentType)) {
-    return { valid: false, error: 'Invalid file type' }
+export function validateAttachment(file: Buffer, contentType: string): { valid: boolean; error?: string } {
+  if (!ALLOWED_ATTACHMENT_TYPES.includes(contentType)) {
+    return { valid: false, error: 'Nieprawidłowy typ pliku. Dozwolone: PDF, ZIP, Word, Excel, TXT' }
   }
 
-  if (file.length > MAX_FILE_SIZE) {
-    return { valid: false, error: 'File too large. Maximum size: 10MB' }
+  if (file.length > MAX_ATTACHMENT_SIZE) {
+    return { valid: false, error: 'Plik jest za duży. Maksymalny rozmiar: 20MB' }
   }
 
   return { valid: true }

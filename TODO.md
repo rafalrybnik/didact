@@ -5,134 +5,257 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 
 ---
 
-## PRIORYTET 1: Funkcjonalność i UX (Lokalne)
-*Cel: Domykanie funkcjonalności aplikacji i poprawa UX Admina bez zależności od zewnętrznych serwisów.*
+## UKOŃCZONE ✅
 
-### 1.1 Dane do faktury (REQ-051) ✅
-**Opis:** Przed przekierowaniem do Stripe, użytkownik może zaznaczyć "Chcę fakturę" i podać dane. Jest to kluczowe dla sprzedaży B2B.
+### Priorytet 1: Funkcjonalność i UX (Lokalne)
 
-- [x] `app/pages/checkout/[slug].vue` - strona pośrednia przed Stripe:
-  - Checkbox "Chcę fakturę"
-  - Textarea na dane do faktury (bez walidacji)
-  - Przycisk "Przejdź do płatności"
-- [x] Aktualizacja `server/api/checkout/create-session.post.ts` - przyjmowanie `invoiceData`
-- [x] Wyświetlanie danych faktury w `/admin/orders` przy zamówieniu
+#### 1.1 Dane do faktury (REQ-051) ✅
+- [x] Strona checkout z opcją "Chcę fakturę"
+- [x] Wyświetlanie danych faktury w panelu admin
 
-### 1.2 Edytor WYSIWYG (RichTextEditor) ✅
-**Opis:** Nowoczesny, prawdziwy edytor WYSIWYG (nie zwykła textarea z HTML). Musi być zaimplementowany jako **reusable component**, używany spójnie w całym systemie.
+#### 1.2 Edytor WYSIWYG (RichTextEditor) ✅
+- [x] Implementacja TipTap z rozszerzonymi funkcjami
+- [x] Formatowanie: bold, italic, underline, strikethrough, highlight, code
+- [x] Nagłówki H1-H3, wyrównanie tekstu
+- [x] Listy punktowane/numerowane, cytaty
+- [x] Tabele z operacjami dodawania/usuwania wierszy i kolumn
+- [x] Upload obrazków (z MinIO/R2)
+- [x] Osadzanie YouTube
+- [x] Stylizacja Google Docs-like w edytorze lekcji
 
-- [x] `app/components/admin/RichTextEditor.client.vue` - implementacja oparta na TipTap.
-- [x] Funkcje: nagłówki, bold/italic, listy punktowane/numerowane, linki, blok cytatu.
-- [x] Stylizacja: "Notion-like" lub czysty, nowoczesny wygląd pasujący do `main.css`.
-- [x] Zastosowanie komponentu w:
-  - [x] Edycja opisu sprzedażowego kursu (`sales_description`)
-  - [x] Edycja treści lekcji (`content_html`)
-  - [x] Edycja stron CMS (`Page.contentHtml`)
+#### 1.3 Dynamiczne linki w stopce (REQ-062) ✅
+- [x] API pobierania opublikowanych stron CMS
+- [x] Dynamiczne wyświetlanie w stopce
 
-### 1.3 Dynamiczne linki w stopce (REQ-062) ✅
-**Opis:** Stopka powinna zawierać linki do opublikowanych stron CMS (np. Regulamin, Polityka Prywatności).
+#### 1.4 Materiały do pobrania (REQ-011) ✅
+- [x] Upload załączników do lekcji
+- [x] Wyświetlanie w playerze kursu
 
-- [x] `server/api/public/pages.get.ts` - lista opublikowanych stron (slug, title)
-- [x] Aktualizacja `app/layouts/public.vue` - dynamiczne pobieranie i wyświetlanie linków
-- [x] Cache linków (via useFetch with key)
-
-### 1.4 Materiały do pobrania (REQ-011 - częściowe) ✅
-**Opis:** Admin może dodać pliki PDF/ZIP do lekcji jako materiały do pobrania.
-
-- [x] Rozszerzenie modelu `Lesson` - pole `attachments` (JSON array)
-- [x] UI w edytorze lekcji - upload wielu plików (AdminAttachmentsEditor)
-- [x] Wyświetlanie listy załączników w playerze kursu (CourseLessonAttachments)
-- [x] Endpoint pobierania z weryfikacją dostępu (via existing storage)
+#### 1.5 Storage S3-compatible ✅
+- [x] MinIO w docker-compose dla lokalnego developmentu
+- [x] Adapter S3 z AWS SDK dla Cloudflare R2
+- [x] Endpoint uploadu obrazków dla edytora
 
 ---
 
-## PRIORYTET 2: Infrastruktura Produkcyjna (Email & Storage)
-*Cel: Integracje wymagające zewnętrznych kluczy API (SMTP, S3). Realizowane w drugiej kolejności.*
+## DO ZROBIENIA
 
-### 2.1 Reset hasła (REQ-002)
-**Opis:** Użytkownicy muszą móc zresetować hasło przez email.
+### PRIORYTET 2: Infrastruktura Produkcyjna (Email & Auth)
 
-- [ ] `server/api/auth/forgot-password.post.ts` - generowanie tokenu reset
-- [ ] `server/api/auth/reset-password.post.ts` - walidacja tokenu i zmiana hasła
-- [ ] `app/pages/forgot-password.vue` - formularz "Zapomniałem hasła"
-- [ ] `app/pages/reset-password.vue` - formularz nowego hasła (z tokenem w URL)
-- [ ] Model `PasswordResetToken` w schema.prisma (token, userId, expiresAt)
+#### 2.1 Reset hasła (REQ-002)
+- [ ] `server/api/auth/forgot-password.post.ts` - generowanie tokenu
+- [ ] `server/api/auth/reset-password.post.ts` - zmiana hasła
+- [ ] `app/pages/forgot-password.vue` - formularz
+- [ ] `app/pages/reset-password.vue` - formularz z tokenem
+- [ ] Model `PasswordResetToken` w Prisma
 - [ ] Migracja DB
 
-### 2.2 System email (REQ-001, Notifications)
-**Opis:** Email jest wymagany do: reset hasła, powitanie po zakupie, powiadomienia o ocenie zadania.
-
-- [ ] `server/utils/email.ts` - klient email (Resend lub Nodemailer)
-- [ ] Konfiguracja zmiennych: `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` lub `RESEND_API_KEY`
-- [ ] Template: Welcome email (po zakupie - z linkiem do kursu)
-- [ ] Template: Password reset (z linkiem do resetu)
-- [ ] Template: Homework graded (powiadomienie o ocenie)
-- [ ] Template: Access granted (gdy istniejący user kupuje kolejny kurs)
-
-### 2.3 Produkcyjny storage (pliki)
-**Opis:** Railway nie ma persistent storage. Thumbnails i pliki homework muszą być na zewnętrznym storage.
-
-- [ ] Konfiguracja Cloudflare R2 lub AWS S3
-- [ ] Aktualizacja `server/utils/storage.ts` - adapter dla R2/S3
-- [ ] Zmienne środowiskowe: `STORAGE_ENDPOINT`, `STORAGE_ACCESS_KEY`, `STORAGE_SECRET_KEY`, `STORAGE_BUCKET`
-- [ ] Migracja istniejących plików (jeśli są)
-- [ ] Konfiguracja CORS dla storage bucket
+#### 2.2 System email (REQ-001, Notifications)
+- [ ] `server/utils/email.ts` - klient (Resend lub Nodemailer)
+- [ ] Template: Welcome email (po zakupie)
+- [ ] Template: Password reset
+- [ ] Template: Homework graded
+- [ ] Template: Access granted
 
 ---
 
-## PRIORYTET 3: Ulepszenia UX/DX
+## PROPOZYCJE NOWYCH FUNKCJI (do akceptacji)
 
-### 3.2 CSRF Protection
-**Opis:** Dodatkowa warstwa bezpieczeństwa via nuxt-security.
+Poniżej 20 propozycji nowych funkcji podzielonych na kategorie. Po akceptacji zostaną dodane do backlogu z priorytetami.
 
-- [ ] Weryfikacja konfiguracji `nuxt-security` w `nuxt.config.ts`
-- [ ] Testy ochrony CSRF
+### A. Doświadczenie ucznia (Student Experience)
+
+#### A1. Certyfikaty ukończenia kursu
+**Opis:** Automatyczne generowanie certyfikatów PDF po ukończeniu kursu.
+**Zakres:**
+- Konfigurowalny szablon certyfikatu w panelu admin
+- Dane: imię ucznia, nazwa kursu, data ukończenia
+- Generowanie PDF (np. puppeteer lub jsPDF)
+- Pobieranie z profilu użytkownika
+- Opcjonalny unikalny numer certyfikatu z weryfikacją
+
+#### A2. Notatki ucznia
+**Opis:** Możliwość robienia notatek podczas oglądania lekcji.
+**Zakres:**
+- Panel notatek przy playerze lekcji
+- Zapisywanie notatek per lekcja
+- Eksport notatek do PDF/Markdown
+- Wyszukiwarka notatek
+
+#### A3. Zakładki i ulubione lekcje
+**Opis:** Oznaczanie lekcji do późniejszego powrotu.
+**Zakres:**
+- Przycisk zakładki przy każdej lekcji
+- Lista zakładek w profilu użytkownika
+- Szybki dostęp z dashboardu
+
+#### A4. Tryb ciemny (Dark Mode)
+**Opis:** Opcja przełączania między jasnym a ciemnym motywem.
+**Zakres:**
+- Toggle w ustawieniach użytkownika
+- Zapisywanie preferencji
+- Automatyczne wykrywanie preferencji systemowych
+- Stylizacja wszystkich komponentów
+
+#### A5. Powiadomienia push (Web Push)
+**Opis:** Powiadomienia o nowych lekcjach, ocenionych zadaniach, odpowiedziach.
+**Zakres:**
+- Service Worker dla push notifications
+- Ustawienia powiadomień per typ
+- Endpoint do wysyłania powiadomień
+- Integracja z systemem email (fallback)
+
+### B. Funkcje kursu (Course Features)
+
+#### B6. Drip Content (Scheduled Release)
+**Opis:** Automatyczne udostępnianie lekcji według harmonogramu.
+**Zakres:**
+- Konfiguracja "dni od zapisania" per lekcja
+- Harmonogram oparty na dacie
+- UI pokazujące kiedy lekcja będzie dostępna
+- Powiadomienia o nowych lekcjach
+
+#### B7. Prerekvizity lekcji
+**Opis:** Wymaganie ukończenia konkretnych lekcji przed dostępem do następnych.
+**Zakres:**
+- Relacja "wymaga lekcji X" w edytorze
+- Walidacja dostępu do lekcji
+- Wizualna mapa zależności (opcjonalne)
+
+#### B8. Wersjonowanie kursów
+**Opis:** Możliwość aktualizacji kursu z zachowaniem dostępu do starej wersji.
+**Zakres:**
+- Kopiowanie kursu jako nowa wersja
+- Migracja uczniów do nowej wersji (opcjonalna)
+- Historia zmian
+
+#### B9. Pakiety kursów (Bundles)
+**Opis:** Sprzedaż wielu kursów w pakiecie ze zniżką.
+**Zakres:**
+- Model Bundle (kursy + cena)
+- Strona sprzedażowa pakietu
+- Checkout dla pakietu
+- Panel admin do zarządzania
+
+#### B10. Kod dostępu / kupony
+**Opis:** Jednorazowe kody dające dostęp do kursu lub zniżkę.
+**Zakres:**
+- Model Coupon (kod, typ rabatu, limit użyć)
+- Walidacja przy checkout
+- Raporty użycia kuponów
+- Kody 100% zniżki = darmowy dostęp
+
+### C. Panel administracyjny (Admin Features)
+
+#### C11. Dashboard z analityką
+**Opis:** Rozbudowany dashboard z wykresami i statystykami.
+**Zakres:**
+- Wykres sprzedaży (dzienny/tygodniowy/miesięczny)
+- Najpopularniejsze kursy
+- Wskaźnik ukończenia kursów
+- Aktywni użytkownicy
+- Integracja z Chart.js lub similar
+
+#### C12. Export danych (GDPR)
+**Opis:** Eksport danych użytkownika zgodnie z GDPR.
+**Zakres:**
+- Endpoint eksportu danych użytkownika
+- Format JSON/CSV
+- Żądanie eksportu z profilu
+- Usunięcie konta (prawo do bycia zapomnianym)
+
+#### C13. Bulk operations
+**Opis:** Masowe operacje na kursach, użytkownikach, zamówieniach.
+**Zakres:**
+- Zaznaczanie wielu rekordów
+- Bulk delete, archive, publish
+- Bulk email do uczniów kursu
+- Import użytkowników z CSV
+
+#### C14. Audit log
+**Opis:** Historia działań administratorów.
+**Zakres:**
+- Logowanie wszystkich akcji admin
+- Filtrowanie po typie, dacie, użytkowniku
+- Przechowywanie przez X dni
+
+#### C15. Role i uprawnienia
+**Opis:** Rozbudowany system ról (super admin, content editor, support).
+**Zakres:**
+- Tabela ról i uprawnień
+- Przypisywanie ról użytkownikom
+- Middleware sprawdzający uprawnienia
+- UI zarządzania rolami
+
+### D. Komunikacja i społeczność
+
+#### D16. Komentarze pod lekcjami
+**Opis:** Dyskusja pod każdą lekcją.
+**Zakres:**
+- Model Comment (treść, autor, lekcja)
+- Zagnieżdżone odpowiedzi
+- Moderacja (usuwanie, edycja)
+- Powiadomienia o odpowiedziach
+
+#### D17. Forum kursu
+**Opis:** Dedykowane forum dla uczestników kursu.
+**Zakres:**
+- Kategorie tematyczne
+- Wątki i odpowiedzi
+- Pinowanie ważnych wątków
+- Wyszukiwarka
+
+#### D18. Live Q&A / Webinary
+**Opis:** Integracja z narzędziami do live streaming.
+**Zakres:**
+- Harmonogram webinarów
+- Integracja z Zoom/YouTube Live
+- Nagrania dostępne jako lekcje
+- Powiadomienia o nadchodzących sesjach
+
+### E. Monetyzacja i marketing
+
+#### E19. Subskrypcje (recurring payments)
+**Opis:** Model subskrypcyjny zamiast jednorazowej płatności.
+**Zakres:**
+- Plany subskrypcyjne w Stripe
+- Zarządzanie subskrypcją (anulowanie, zmiana planu)
+- Dostęp do kursów na czas subskrypcji
+- Dunning management (nieudane płatności)
+
+#### E20. Program afiliacyjny
+**Opis:** System poleceń z prowizją.
+**Zakres:**
+- Unikalne linki afiliacyjne
+- Śledzenie konwersji
+- Wypłaty prowizji
+- Panel afilianta
 
 ---
 
-## PRIORYTET 4: Nice-to-have
+## Priorytetyzacja (propozycja)
 
-### 4.1 Testy E2E
-**Opis:** Automatyczne testy podstawowego flow (opcjonalne).
-
-- [ ] Konfiguracja Playwright
-- [ ] Test: Rejestracja -> Zakup -> Dostęp do kursu
-- [ ] Test: Admin tworzy kurs -> Publikuje -> Widoczny w katalogu
-
-### 4.2 Pełna ekstrakcja i18n
-**Opis:** Wszystkie hardcoded teksty do plików tłumaczeń.
-
-- [ ] Audyt komponentów pod kątem hardcoded tekstów
-- [ ] Ekstrakcja do `lang/pl.json`
-- [ ] Użycie composable `useI18n` wszędzie
-
----
-
-## Szacowany nakład pracy
-
-| Priorytet | Zadanie | Szacunek |
-|-----------|---------|----------|
-| P1 | Reset hasła | 2-3h |
-| P1 | System email | 3-4h |
-| P1 | Produkcyjny storage | 2-3h |
-| P2 | Dane do faktury | 1-2h |
-| P2 | Dynamiczne linki stopki | 1h |
-| P2 | Materiały do pobrania | 2-3h |
-| P3 | RichTextEditor | 2-3h |
-| P3 | CSRF | 0.5h |
-| P4 | Testy E2E | 3-4h |
-| P4 | i18n extraction | 2-3h |
-
-**Łącznie P1-P3:** ~15-20h
-**Łącznie wszystko:** ~22-28h
+| ID | Funkcja | Priorytet | Złożoność | Wartość |
+|----|---------|-----------|-----------|---------|
+| A1 | Certyfikaty | Wysoki | Średnia | Wysoka |
+| A4 | Dark Mode | Średni | Niska | Średnia |
+| B10 | Kupony/kody | Wysoki | Średnia | Wysoka |
+| C11 | Dashboard analityka | Wysoki | Średnia | Wysoka |
+| C12 | Export GDPR | Wysoki | Niska | Wysoka |
+| D16 | Komentarze | Średni | Średnia | Średnia |
+| B6 | Drip Content | Średni | Średnia | Średnia |
+| A2 | Notatki | Niski | Średnia | Średnia |
+| E19 | Subskrypcje | Średni | Wysoka | Wysoka |
+| B9 | Pakiety | Niski | Średnia | Średnia |
 
 ---
 
-## Rekomendacja
+## Następne kroki
 
-Dla MVP produkcyjnego realizujemy zadania w następującej kolejności:
+1. **Akceptacja propozycji** - wybór funkcji do implementacji
+2. **Priorytet 2** - dokończenie resetu hasła i systemu email
+3. **Wybrane funkcje** - implementacja według zaakceptowanej listy
 
-1.  **Priorytet 1 (Funkcjonalność i UX):** Domykamy aplikację, aby była w pełni funkcjonalna i przyjazna w obsłudze (Dane faktury, WYSIWYG). To pozwala na pełne testowanie flow zakupowego i edycyjnego.
-2.  **Priorytet 2 (Infrastruktura):** Dopiero gdy aplikacja jest gotowa, konfigurujemy zewnętrzne usługi (Email, S3, Reset hasła).
+---
 
-**Zadanie na TERAZ:** Realizacja Priorytetu 1 (1.1 - 1.4).
+*Ostatnia aktualizacja: 2025-02-01*

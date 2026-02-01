@@ -40,6 +40,8 @@ import {
   Trash2,
   Rows2,
   Columns2,
+  Upload,
+  Loader2,
 } from 'lucide-vue-next'
 
 const props = defineProps<{
@@ -51,6 +53,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
+
+const { error: showError } = useToast()
 
 const editor = useEditor({
   content: props.modelValue,
@@ -141,6 +145,12 @@ const linkUrl = ref('')
 const imageUrl = ref('')
 const youtubeUrl = ref('')
 
+// Image upload
+const imageTab = ref<'url' | 'upload'>('upload')
+const imageFile = ref<File | null>(null)
+const isUploadingImage = ref(false)
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
 function openLinkDialog() {
   linkUrl.value = editor.value?.getAttributes('link').href || ''
   showLinkDialog.value = true
@@ -158,10 +168,56 @@ function setLink() {
 
 function openImageDialog() {
   imageUrl.value = ''
+  imageFile.value = null
+  imageTab.value = 'upload'
   showImageDialog.value = true
 }
 
-function insertImage() {
+function handleFileSelect(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file) {
+    imageFile.value = file
+  }
+}
+
+function handleDrop(event: DragEvent) {
+  event.preventDefault()
+  const file = event.dataTransfer?.files?.[0]
+  if (file && file.type.startsWith('image/')) {
+    imageFile.value = file
+  }
+}
+
+function handleDragOver(event: DragEvent) {
+  event.preventDefault()
+}
+
+async function uploadAndInsertImage() {
+  if (!imageFile.value) return
+
+  isUploadingImage.value = true
+
+  try {
+    const formData = new FormData()
+    formData.append('image', imageFile.value)
+
+    const response = await $fetch<{ url: string }>('/api/admin/upload/image', {
+      method: 'POST',
+      body: formData,
+    })
+
+    editor.value?.chain().focus().setImage({ src: response.url }).run()
+    showImageDialog.value = false
+    imageFile.value = null
+  } catch (e: any) {
+    showError('Błąd uploadu', e.data?.message || 'Nie udało się przesłać obrazu')
+  } finally {
+    isUploadingImage.value = false
+  }
+}
+
+function insertImageFromUrl() {
   if (imageUrl.value) {
     editor.value?.chain().focus().setImage({ src: imageUrl.value }).run()
   }
@@ -419,7 +475,7 @@ onBeforeUnmount(() => {
         </button>
         <button
           type="button"
-          title="Obraz (URL)"
+          title="Obraz"
           class="p-1.5 rounded hover:bg-slate-200 transition-colors"
           @click="openImageDialog"
         >
@@ -604,31 +660,111 @@ onBeforeUnmount(() => {
       >
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
           <h3 class="text-lg font-semibold mb-4">Wstaw obraz</h3>
-          <input
-            v-model="imageUrl"
-            type="url"
-            placeholder="https://example.com/image.jpg"
-            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-4"
-            @keyup.enter="insertImage"
-          >
-          <p class="text-sm text-slate-500 mb-4">
-            Podaj URL obrazu. Obsługiwane formaty: JPG, PNG, GIF, WebP.
-          </p>
-          <div class="flex justify-end gap-2">
+
+          <!-- Tabs -->
+          <div class="flex border-b border-slate-200 mb-4">
             <button
               type="button"
-              class="px-4 py-2 text-slate-600 hover:text-slate-900"
-              @click="showImageDialog = false"
+              class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
+              :class="imageTab === 'upload'
+                ? 'border-primary-600 text-primary-600'
+                : 'border-transparent text-slate-500 hover:text-slate-700'"
+              @click="imageTab = 'upload'"
             >
-              Anuluj
+              Upload
             </button>
             <button
               type="button"
-              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-              @click="insertImage"
+              class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
+              :class="imageTab === 'url'
+                ? 'border-primary-600 text-primary-600'
+                : 'border-transparent text-slate-500 hover:text-slate-700'"
+              @click="imageTab = 'url'"
             >
-              Wstaw
+              URL
             </button>
+          </div>
+
+          <!-- Upload tab -->
+          <div v-if="imageTab === 'upload'" class="space-y-4">
+            <div
+              class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-primary-500 transition-colors cursor-pointer"
+              :class="{ 'border-primary-500 bg-primary-50': imageFile }"
+              @click="fileInputRef?.click()"
+              @drop="handleDrop"
+              @dragover="handleDragOver"
+            >
+              <input
+                ref="fileInputRef"
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                class="hidden"
+                @change="handleFileSelect"
+              >
+
+              <template v-if="imageFile">
+                <ImageIcon class="w-12 h-12 mx-auto text-primary-600 mb-2" />
+                <p class="font-medium text-slate-900">{{ imageFile.name }}</p>
+                <p class="text-sm text-slate-500">{{ (imageFile.size / 1024).toFixed(1) }} KB</p>
+              </template>
+
+              <template v-else>
+                <Upload class="w-12 h-12 mx-auto text-slate-400 mb-2" />
+                <p class="text-slate-600">Przeciągnij obraz lub kliknij aby wybrać</p>
+                <p class="text-sm text-slate-400 mt-1">JPEG, PNG, GIF, WebP (max 5MB)</p>
+              </template>
+            </div>
+
+            <div class="flex justify-end gap-2">
+              <button
+                type="button"
+                class="px-4 py-2 text-slate-600 hover:text-slate-900"
+                @click="showImageDialog = false"
+              >
+                Anuluj
+              </button>
+              <button
+                type="button"
+                class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 flex items-center gap-2"
+                :disabled="!imageFile || isUploadingImage"
+                @click="uploadAndInsertImage"
+              >
+                <Loader2 v-if="isUploadingImage" class="w-4 h-4 animate-spin" />
+                {{ isUploadingImage ? 'Przesyłanie...' : 'Wstaw' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- URL tab -->
+          <div v-if="imageTab === 'url'" class="space-y-4">
+            <input
+              v-model="imageUrl"
+              type="url"
+              placeholder="https://example.com/image.jpg"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              @keyup.enter="insertImageFromUrl"
+            >
+            <p class="text-sm text-slate-500">
+              Podaj URL obrazu. Obsługiwane formaty: JPG, PNG, GIF, WebP.
+            </p>
+
+            <div class="flex justify-end gap-2">
+              <button
+                type="button"
+                class="px-4 py-2 text-slate-600 hover:text-slate-900"
+                @click="showImageDialog = false"
+              >
+                Anuluj
+              </button>
+              <button
+                type="button"
+                class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+                :disabled="!imageUrl"
+                @click="insertImageFromUrl"
+              >
+                Wstaw
+              </button>
+            </div>
           </div>
         </div>
       </div>
