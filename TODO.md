@@ -8,26 +8,26 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 ## PRIORYTET 1: Funkcjonalność i UX (Lokalne)
 *Cel: Domykanie funkcjonalności aplikacji i poprawa UX Admina bez zależności od zewnętrznych serwisów.*
 
-### 1.1 Dane do faktury (REQ-051)
+### 1.1 Dane do faktury (REQ-051) ✅
 **Opis:** Przed przekierowaniem do Stripe, użytkownik może zaznaczyć "Chcę fakturę" i podać dane. Jest to kluczowe dla sprzedaży B2B.
 
-- [ ] `app/pages/checkout/[slug].vue` - strona pośrednia przed Stripe:
+- [x] `app/pages/checkout/[slug].vue` - strona pośrednia przed Stripe:
   - Checkbox "Chcę fakturę"
   - Textarea na dane do faktury (bez walidacji)
   - Przycisk "Przejdź do płatności"
-- [ ] Aktualizacja `server/api/checkout/create-session.post.ts` - przyjmowanie `invoiceData`
-- [ ] Wyświetlanie danych faktury w `/admin/orders` przy zamówieniu
+- [x] Aktualizacja `server/api/checkout/create-session.post.ts` - przyjmowanie `invoiceData`
+- [x] Wyświetlanie danych faktury w `/admin/orders` przy zamówieniu
 
-### 1.2 Edytor WYSIWYG (RichTextEditor)
+### 1.2 Edytor WYSIWYG (RichTextEditor) ✅
 **Opis:** Nowoczesny, prawdziwy edytor WYSIWYG (nie zwykła textarea z HTML). Musi być zaimplementowany jako **reusable component**, używany spójnie w całym systemie.
 
-- [ ] `app/components/admin/RichTextEditor.vue` - implementacja oparta na TipTap.
-- [ ] Funkcje: nagłówki, bold/italic, listy punktowane/numerowane, linki, blok cytatu.
-- [ ] Stylizacja: "Notion-like" lub czysty, nowoczesny wygląd pasujący do `main.css`.
-- [ ] Zastosowanie komponentu w:
-  - [ ] Edycja opisu sprzedażowego kursu (`sales_description`)
-  - [ ] Edycja treści lekcji (`content_html`)
-  - [ ] Edycja stron CMS (`Page.contentHtml`)
+- [x] `app/components/admin/RichTextEditor.client.vue` - implementacja oparta na TipTap.
+- [x] Funkcje: nagłówki, bold/italic, listy punktowane/numerowane, linki, blok cytatu.
+- [x] Stylizacja: "Notion-like" lub czysty, nowoczesny wygląd pasujący do `main.css`.
+- [x] Zastosowanie komponentu w:
+  - [x] Edycja opisu sprzedażowego kursu (`sales_description`)
+  - [x] Edycja treści lekcji (`content_html`)
+  - [x] Edycja stron CMS (`Page.contentHtml`)
 
 ### 1.3 Dynamiczne linki w stopce (REQ-062)
 **Opis:** Stopka powinna zawierać linki do opublikowanych stron CMS (np. Regulamin, Polityka Prywatności).

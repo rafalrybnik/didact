@@ -220,17 +220,10 @@ const showPreview = ref(false)
           <UiCard>
             <h2 class="text-lg font-medium text-slate-900 mb-4">Treść lekcji</h2>
 
-            <div>
-              <textarea
-                v-model="form.contentHtml"
-                rows="15"
-                class="input-base font-mono text-sm"
-                placeholder="<p>Treść lekcji...</p>"
-              />
-              <p class="text-sm text-slate-500 mt-1">
-                Obsługuje HTML. W przyszłości zostanie dodany edytor WYSIWYG.
-              </p>
-            </div>
+            <AdminRichTextEditor
+              v-model="form.contentHtml"
+              placeholder="Treść lekcji..."
+            />
           </UiCard>
         </div>
 

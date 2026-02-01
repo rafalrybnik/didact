@@ -370,15 +370,10 @@ async function handleReorder(type: 'module' | 'lesson', items: { id: string; ord
             <label class="block text-sm font-medium text-slate-700 mb-1">
               Opis na stronie sprzedażowej
             </label>
-            <textarea
+            <AdminRichTextEditor
               v-model="form.salesDescription"
-              rows="6"
-              class="input-base"
               placeholder="Tekst zachęcający do zakupu kursu..."
             />
-            <p class="text-sm text-slate-500 mt-1">
-              Obsługuje podstawowy HTML
-            </p>
           </div>
         </form>
       </UiCard>

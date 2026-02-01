@@ -124,14 +124,10 @@ async function handleSave() {
             <label class="block text-sm font-medium text-slate-700 mb-1">
               Treść
             </label>
-            <textarea
+            <AdminRichTextEditor
               v-model="form.contentHtml"
-              rows="15"
-              class="input-base font-mono text-sm"
+              placeholder="Treść strony..."
             />
-            <p class="text-sm text-slate-500 mt-1">
-              Obsługuje HTML
-            </p>
           </div>
 
           <label class="flex items-center gap-3">
