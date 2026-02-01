@@ -1,5 +1,7 @@
 import { prisma } from '~~/server/utils/prisma'
 import { getStripe } from '~~/server/utils/stripe'
+import { sendEmail } from '~~/server/utils/email'
+import { welcomeTemplate, accessGrantedTemplate } from '~~/server/utils/emailTemplates'
 import type Stripe from 'stripe'
 
 export default defineEventHandler(async (event) => {
@@ -50,9 +52,13 @@ export default defineEventHandler(async (event) => {
 
       console.log('Checkout session completed:', session.id)
 
-      // Get order by session ID
+      // Get order by session ID with user and course info
       const order = await prisma.order.findUnique({
         where: { stripeSessionId: session.id },
+        include: {
+          user: { select: { id: true, email: true, name: true } },
+          course: { select: { id: true, title: true, slug: true } },
+        },
       })
 
       if (!order) {
@@ -79,7 +85,8 @@ export default defineEventHandler(async (event) => {
         },
       })
 
-      if (!existingEnrollment) {
+      const isNewEnrollment = !existingEnrollment
+      if (isNewEnrollment) {
         await prisma.enrollment.create({
           data: {
             userId: order.userId,
@@ -87,6 +94,43 @@ export default defineEventHandler(async (event) => {
           },
         })
         console.log('Created enrollment for user:', order.userId, 'course:', order.courseId)
+      }
+
+      // Send welcome/access granted email
+      const appUrl = process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3000'
+      const courseUrl = `${appUrl}/course/${order.course.slug}`
+
+      try {
+        if (isNewEnrollment) {
+          // First time enrollment - welcome email
+          const emailContent = welcomeTemplate({
+            userName: order.user.name || '',
+            courseName: order.course.title,
+            courseUrl,
+          })
+          await sendEmail({
+            to: order.user.email,
+            subject: emailContent.subject,
+            html: emailContent.html,
+          })
+          console.log('Sent welcome email to:', order.user.email)
+        } else {
+          // Already enrolled - access granted email
+          const emailContent = accessGrantedTemplate({
+            userName: order.user.name || '',
+            courseName: order.course.title,
+            courseUrl,
+          })
+          await sendEmail({
+            to: order.user.email,
+            subject: emailContent.subject,
+            html: emailContent.html,
+          })
+          console.log('Sent access granted email to:', order.user.email)
+        }
+      } catch (emailError) {
+        console.error('Failed to send email:', emailError)
+        // Don't fail the webhook because of email
       }
 
       break

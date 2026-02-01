@@ -1,5 +1,7 @@
 import { z } from 'zod'
 import { prisma } from '~~/server/utils/prisma'
+import { sendEmail } from '~~/server/utils/email'
+import { homeworkGradedTemplate } from '~~/server/utils/emailTemplates'
 
 const gradeSubmissionSchema = z.object({
   status: z.enum(['PASSED', 'REJECTED']),
@@ -27,7 +29,22 @@ export default defineEventHandler(async (event) => {
   const submission = await prisma.submission.findUnique({
     where: { id },
     include: {
-      homework: true,
+      homework: {
+        include: {
+          lesson: {
+            include: {
+              course: true,
+            },
+          },
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
     },
   })
 
@@ -88,6 +105,37 @@ export default defineEventHandler(async (event) => {
         completedAt: new Date(),
       },
     })
+  }
+
+  // Send notification email
+  const lesson = submission.homework.lesson
+  const course = lesson.course
+  const appUrl = process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const lessonUrl = `${appUrl}/course/${course.slug}/${lesson.id}`
+
+  // Map internal status to email status
+  const emailStatus = status === 'PASSED' ? 'APPROVED' : 'REJECTED'
+
+  try {
+    const emailContent = homeworkGradedTemplate({
+      userName: submission.user.name || '',
+      lessonName: lesson.title,
+      courseName: course.title,
+      status: emailStatus,
+      feedback: feedback || undefined,
+      lessonUrl,
+    })
+
+    await sendEmail({
+      to: submission.user.email,
+      subject: emailContent.subject,
+      html: emailContent.html,
+    })
+
+    console.log('Sent homework graded email to:', submission.user.email)
+  } catch (emailError) {
+    console.error('Failed to send homework graded email:', emailError)
+    // Don't fail the request because of email
   }
 
   return { submission: updatedSubmission }
