@@ -43,15 +43,17 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 ### FAZA A: Infrastruktura Email (wymagane dla pozostałych)
 
 #### A.1 System email
-**Cel:** Podstawowa infrastruktura do wysyłania maili.
+**Cel:** Podstawowa infrastruktura do wysyłania maili. Póki co używamy zwykłego SMTP. Dane dostępowe w configu .env. Lokalnie do testów używamy Mailhog.
 
 | Krok | Plik | Opis |
 |------|------|------|
-| 1 | `server/utils/email.ts` | Klient email z Resend SDK |
-| 2 | `.env.example` | Dodanie `RESEND_API_KEY` |
+| 1 | `server/utils/email.ts` | Klient email SMTP (Nodemailer)|
+| 2 | `.env.example` | Dodanie zmiennych z danymi dostępowymi |
 | 3 | `server/utils/emailTemplates.ts` | Bazowy szablon HTML |
 
-**Zależności:** Konto Resend, domena do wysyłki
+**Zależności:** Konto SMTP
+
+
 
 ---
 
@@ -134,14 +136,12 @@ model Lesson {
 | Krok | Plik | Opis |
 |------|------|------|
 | 1 | `npm install chart.js vue-chartjs` | Instalacja Chart.js |
-| 2 | `server/api/admin/analytics/sales.get.ts` | Dane sprzedaży (ostatnie 30 dni) |
-| 3 | `server/api/admin/analytics/courses.get.ts` | Statystyki kursów (enrollments, completion) |
-| 4 | `server/api/admin/analytics/users.get.ts` | Aktywni użytkownicy |
-| 5 | `app/components/admin/SalesChart.client.vue` | Wykres sprzedaży |
-| 6 | `app/components/admin/StatsCards.vue` | Karty ze statystykami |
-| 7 | `app/pages/admin/index.vue` | Integracja komponentów |
+| 2 | `server/api/admin/analytics/dashboard.get.ts` | Agregujący endpoint: sprzedaż, kursy, użytkownicy |
+| 3 | `app/components/admin/SalesChart.client.vue` | Wykres sprzedaży |
+| 4 | `app/components/admin/StatsCards.vue` | Karty ze statystykami |
+| 5 | `app/pages/admin/index.vue` | Integracja komponentów |
 
-**Metryki:**
+**Metryki (w jednym JSON):**
 - Przychód dzienny/tygodniowy/miesięczny
 - Liczba nowych zapisów
 - Najpopularniejsze kursy

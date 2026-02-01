@@ -55,6 +55,17 @@ services:
       exit 0;
       "
 
+  # Mailhog - local email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: didact-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    logging:
+      driver: none
+
 volumes:
   postgres_data:
   minio_data:
