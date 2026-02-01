@@ -27,11 +27,14 @@ function createTransporter(): Transporter {
   }
 
   // Production: Real SMTP with auth
-  console.log(`[Email] Using SMTP: ${host}:${port}`)
+  // Port 465 = direct TLS (secure: true)
+  // Port 587 = STARTTLS (secure: false, TLS upgrade happens automatically)
+  const useSecure = port === 465
+  console.log(`[Email] Using SMTP: ${host}:${port} (secure: ${useSecure})`)
   return nodemailer.createTransport({
     host,
     port,
-    secure,
+    secure: useSecure,
     auth: {
       user,
       pass,
