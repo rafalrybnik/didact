@@ -29,12 +29,12 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
   - [x] Edycja treści lekcji (`content_html`)
   - [x] Edycja stron CMS (`Page.contentHtml`)
 
-### 1.3 Dynamiczne linki w stopce (REQ-062)
+### 1.3 Dynamiczne linki w stopce (REQ-062) ✅
 **Opis:** Stopka powinna zawierać linki do opublikowanych stron CMS (np. Regulamin, Polityka Prywatności).
 
-- [ ] `server/api/public/pages.get.ts` - lista opublikowanych stron (slug, title)
-- [ ] Aktualizacja `app/layouts/public.vue` - dynamiczne pobieranie i wyświetlanie linków
-- [ ] Cache linków (composable lub useState)
+- [x] `server/api/public/pages.get.ts` - lista opublikowanych stron (slug, title)
+- [x] Aktualizacja `app/layouts/public.vue` - dynamiczne pobieranie i wyświetlanie linków
+- [x] Cache linków (via useFetch with key)
 
 ### 1.4 Materiały do pobrania (REQ-011 - częściowe)
 **Opis:** Admin może dodać pliki PDF/ZIP do lekcji jako materiały do pobrania.

@@ -4,6 +4,13 @@ import { GraduationCap, LogIn, UserPlus } from 'lucide-vue-next'
 const { user, isLoggedIn } = useAuth()
 const config = useRuntimeConfig()
 const appName = config.public.appName
+
+// Fetch published pages for footer links
+const { data: pagesData } = await useFetch('/api/public/pages', {
+  key: 'footer-pages',
+  default: () => ({ pages: [] }),
+})
+const footerPages = computed(() => pagesData.value?.pages || [])
 </script>
 
 <template>
@@ -63,6 +70,16 @@ const appName = config.public.appName
           <div class="flex items-center gap-2 text-slate-500">
             <GraduationCap class="h-5 w-5" />
             <span class="text-sm">{{ appName }}</span>
+          </div>
+          <div v-if="footerPages.length > 0" class="flex flex-wrap gap-4">
+            <NuxtLink
+              v-for="page in footerPages"
+              :key="page.slug"
+              :to="`/${page.slug}`"
+              class="text-sm text-slate-500 hover:text-slate-700 transition-colors"
+            >
+              {{ page.title }}
+            </NuxtLink>
           </div>
           <div class="text-sm text-slate-500">
             &copy; {{ new Date().getFullYear() }} Wszelkie prawa zastrzeżone
