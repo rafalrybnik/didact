@@ -75,11 +75,18 @@ Fazy 1-6 z oryginalnego planu zostały zaimplementowane. Poniżej lista brakują
 - [x] `server/api/courses/[slug]/curriculum.get.ts` - Status "locked until" per lekcja
 - [x] `app/components/course/CourseSidebar.vue` - UI: ikona zegara + data odblokowania
 
+### FAZA E: Dashboard z analityką ✅
+
+- [x] `npm install chart.js vue-chartjs` - Instalacja Chart.js
+- [x] `server/api/admin/analytics/dashboard.get.ts` - Agregujący endpoint
+- [x] `app/components/admin/SalesChart.client.vue` - Wykres sprzedaży
+- [x] `app/components/admin/StatsCards.vue` - Karty ze statystykami
+- [x] `app/components/admin/CourseStats.vue` - Popularne kursy i wskaźnik ukończenia
+- [x] `app/pages/admin/index.vue` - Integracja komponentów
+
 ---
 
-## DO ZROBIENIA 🟢
-
-### FAZA E: Dashboard z analityką
+## WSZYSTKIE FAZY UKOŃCZONE! ✅
 
 **Cel:** Rozbudowany dashboard z wykresami dla admina.
 
@@ -111,8 +118,10 @@ FAZA C (Powiadomienia) ✅
     ↓
 FAZA D (Drip Content) ✅
     ↓
-FAZA E (Dashboard) ← w trakcie
+FAZA E (Dashboard) ✅
 ```
+
+**Wszystkie fazy ukończone!**
 
 ---
 

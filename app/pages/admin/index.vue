@@ -1,38 +1,18 @@
 <script setup lang="ts">
-import { BookOpen, Users, ShoppingCart, TrendingUp, FileText } from 'lucide-vue-next'
+import { BookOpen } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'admin',
 })
 
-// Fetch dashboard data
+// Fetch analytics data
+const { data: analyticsData, pending: analyticsPending } = await useFetch('/api/admin/analytics/dashboard')
+
+// Fetch courses for recent courses section
 const { data: coursesData, pending: coursesPending } = await useFetch('/api/admin/courses')
-const { data: pagesData, pending: pagesPending } = await useFetch('/api/admin/pages')
 
-const isLoading = computed(() => coursesPending.value || pagesPending.value)
-
-const stats = computed(() => [
-  {
-    name: 'Kursy',
-    value: coursesData.value?.courses?.length ?? 0,
-    icon: BookOpen,
-  },
-  {
-    name: 'Lekcje',
-    value: coursesData.value?.courses?.reduce((acc: number, c: any) => acc + (c._count?.lessons ?? 0), 0) ?? 0,
-    icon: FileText,
-  },
-  {
-    name: 'Studenci',
-    value: coursesData.value?.courses?.reduce((acc: number, c: any) => acc + (c._count?.enrollments ?? 0), 0) ?? 0,
-    icon: Users,
-  },
-  {
-    name: 'Strony',
-    value: pagesData.value?.pages?.length ?? 0,
-    icon: TrendingUp,
-  },
-])
+const isLoading = computed(() => analyticsPending.value)
+const isCoursesLoading = computed(() => coursesPending.value)
 
 // Recent courses
 const recentCourses = computed(() => {
@@ -46,26 +26,64 @@ const recentCourses = computed(() => {
       Dashboard
     </h1>
 
-    <!-- Stats Grid -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+    <!-- Stats Cards -->
+    <div class="mb-6">
       <template v-if="isLoading">
-        <UiCard v-for="i in 4" :key="i">
-          <div class="flex items-center gap-4">
-            <UiSkeleton width="3rem" height="3rem" rounded="lg" />
-            <div>
-              <UiSkeleton width="4rem" height="0.875rem" class="mb-2" />
-              <UiSkeleton width="3rem" height="1.5rem" />
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <UiCard v-for="i in 4" :key="i">
+            <div class="flex items-center justify-between">
+              <div>
+                <UiSkeleton width="6rem" height="0.875rem" class="mb-2" />
+                <UiSkeleton width="4rem" height="1.75rem" class="mb-1" />
+                <UiSkeleton width="8rem" height="0.75rem" />
+              </div>
+              <UiSkeleton width="2.5rem" height="2.5rem" rounded="lg" />
             </div>
-          </div>
+          </UiCard>
+        </div>
+      </template>
+      <template v-else-if="analyticsData?.stats">
+        <AdminStatsCards :stats="analyticsData.stats" />
+      </template>
+    </div>
+
+    <!-- Sales Chart -->
+    <div class="mb-6">
+      <template v-if="isLoading">
+        <UiCard>
+          <UiSkeleton width="10rem" height="1.25rem" class="mb-4" />
+          <UiSkeleton width="100%" height="16rem" />
         </UiCard>
       </template>
-      <template v-else>
-        <AdminMetricCard
-          v-for="stat in stats"
-          :key="stat.name"
-          :title="stat.name"
-          :value="stat.value"
-          :icon="stat.icon"
+      <template v-else-if="analyticsData?.dailySales">
+        <ClientOnly>
+          <AdminSalesChart :data="analyticsData.dailySales" />
+          <template #fallback>
+            <UiCard>
+              <UiSkeleton width="10rem" height="1.25rem" class="mb-4" />
+              <UiSkeleton width="100%" height="16rem" />
+            </UiCard>
+          </template>
+        </ClientOnly>
+      </template>
+    </div>
+
+    <!-- Course Stats -->
+    <div class="mb-6">
+      <template v-if="isLoading">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <UiCard v-for="i in 2" :key="i">
+            <UiSkeleton width="10rem" height="1.25rem" class="mb-4" />
+            <div class="space-y-3">
+              <UiSkeleton v-for="j in 5" :key="j" width="100%" height="1.5rem" />
+            </div>
+          </UiCard>
+        </div>
+      </template>
+      <template v-else-if="analyticsData?.popularCourses">
+        <AdminCourseStats
+          :popular-courses="analyticsData.popularCourses"
+          :completion-rates="analyticsData.courseCompletionRates"
         />
       </template>
     </div>
@@ -84,7 +102,7 @@ const recentCourses = computed(() => {
         </NuxtLink>
       </div>
 
-      <template v-if="isLoading">
+      <template v-if="isCoursesLoading">
         <div class="space-y-3">
           <div v-for="i in 3" :key="i" class="flex items-center gap-4">
             <UiSkeleton width="2.5rem" height="2.5rem" rounded="lg" />
