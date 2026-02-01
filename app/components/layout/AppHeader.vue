@@ -32,21 +32,21 @@ async function handleLogout() {
               to="/admin"
               class="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900"
             >
-              <Shield class="h-4 w-4 flex-shrink-0" />
+              <span class="w-4 h-4 flex-shrink-0 inline-flex items-center justify-center"><Shield class="w-4 h-4" /></span>
               <span>Panel admina</span>
             </NuxtLink>
 
             <!-- User links -->
             <NuxtLink to="/account" class="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
-              <User class="h-4 w-4 flex-shrink-0" />
+              <span class="w-4 h-4 flex-shrink-0 inline-flex items-center justify-center"><User class="w-4 h-4" /></span>
               <span>Moje kursy</span>
             </NuxtLink>
             <NuxtLink to="/messages" class="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
-              <MessageSquare class="h-4 w-4 flex-shrink-0" />
+              <span class="w-4 h-4 flex-shrink-0 inline-flex items-center justify-center"><MessageSquare class="w-4 h-4" /></span>
               <span>Wiadomości</span>
             </NuxtLink>
             <NuxtLink to="/account/settings" class="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
-              <Settings class="h-4 w-4 flex-shrink-0" />
+              <span class="w-4 h-4 flex-shrink-0 inline-flex items-center justify-center"><Settings class="w-4 h-4" /></span>
               <span>Ustawienia</span>
             </NuxtLink>
 
@@ -55,7 +55,7 @@ async function handleLogout() {
               class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700"
               @click="handleLogout"
             >
-              <LogOut class="h-4 w-4 flex-shrink-0" />
+              <span class="w-4 h-4 flex-shrink-0 inline-flex items-center justify-center"><LogOut class="w-4 h-4" /></span>
               <span>Wyloguj</span>
             </button>
           </template>
@@ -63,12 +63,12 @@ async function handleLogout() {
           <template v-else>
             <!-- Guest links -->
             <NuxtLink to="/login" class="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900">
-              <LogIn class="h-4 w-4 flex-shrink-0" />
+              <span class="w-4 h-4 flex-shrink-0 inline-flex items-center justify-center"><LogIn class="w-4 h-4" /></span>
               <span>Zaloguj się</span>
             </NuxtLink>
             <NuxtLink to="/register">
               <UiButton variant="primary" size="sm">
-                <UserPlus class="h-4 w-4 flex-shrink-0" />
+                <span class="w-4 h-4 flex-shrink-0 inline-flex items-center justify-center"><UserPlus class="w-4 h-4" /></span>
                 <span>Zarejestruj się</span>
               </UiButton>
             </NuxtLink>
