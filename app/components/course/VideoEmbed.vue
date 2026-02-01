@@ -50,7 +50,7 @@ const generatedIframe = computed(() => {
   // YouTube
   const youtubeMatch = props.url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
   if (youtubeMatch) {
-    return `<iframe src="https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+    return `<iframe src="https://www.youtube.com/embed/${youtubeMatch[1]}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
   }
 
   // Vimeo
