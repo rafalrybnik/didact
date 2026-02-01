@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Save, Play, FileText } from 'lucide-vue-next'
+import { ArrowLeft, Save, Play, FileText, Video, ChevronDown, ChevronUp } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'admin',
@@ -89,13 +89,18 @@ function useGeneratedIframe() {
   }
 }
 
+// Video panel expanded state
+const videoExpanded = ref(true)
+const hasVideo = computed(() => form.videoUrl || form.videoIframe)
+
 // Preview video
 const showPreview = ref(false)
 </script>
 
 <template>
-  <div>
-    <div class="mb-6">
+  <div class="h-full flex flex-col">
+    <!-- Header -->
+    <div class="flex-shrink-0 mb-4">
       <NuxtLink
         :to="`/admin/courses/${courseId}`"
         class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-2"
@@ -105,11 +110,8 @@ const showPreview = ref(false)
       </NuxtLink>
 
       <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-semibold text-slate-900">
-            {{ lesson?.title || 'Ładowanie...' }}
-          </h1>
-          <p v-if="course" class="text-sm text-slate-500 mt-1">
+        <div class="flex-1 min-w-0">
+          <p v-if="course" class="text-sm text-slate-500">
             {{ course.title }}
           </p>
         </div>
@@ -122,35 +124,29 @@ const showPreview = ref(false)
     </div>
 
     <template v-if="pending">
-      <UiCard class="max-w-3xl">
+      <UiCard class="flex-1">
         <div class="space-y-4">
-          <UiSkeleton width="100%" height="2.5rem" />
-          <UiSkeleton width="100%" height="2.5rem" />
-          <UiSkeleton width="100%" height="10rem" />
+          <UiSkeleton width="60%" height="2.5rem" />
+          <UiSkeleton width="100%" height="400px" />
         </div>
       </UiCard>
     </template>
 
     <template v-else-if="lesson">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Main content -->
-        <div class="lg:col-span-2 space-y-6">
-          <!-- Basic info -->
-          <UiCard>
-            <h2 class="text-lg font-medium text-slate-900 mb-4">Informacje podstawowe</h2>
-
-            <div class="space-y-4">
-              <UiInput
+      <div class="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-0">
+        <!-- Main content - Editor focused -->
+        <div class="lg:col-span-3 flex flex-col min-h-0">
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden">
+            <!-- Document header - like Google Docs -->
+            <div class="border-b border-slate-200 px-6 py-4">
+              <input
                 v-model="form.title"
-                label="Tytuł lekcji"
-                required
+                type="text"
+                placeholder="Tytuł lekcji..."
+                class="w-full text-2xl font-semibold text-slate-900 placeholder-slate-400 border-0 p-0 focus:outline-none focus:ring-0"
               />
-
-              <div v-if="modules.length > 0">
-                <label class="block text-sm font-medium text-slate-700 mb-1">
-                  Moduł
-                </label>
-                <select v-model="form.moduleId" class="input-base">
+              <div v-if="modules.length > 0" class="mt-2">
+                <select v-model="form.moduleId" class="text-sm border-0 p-0 text-slate-500 focus:outline-none focus:ring-0 cursor-pointer hover:text-slate-700">
                   <option :value="null">Bez modułu</option>
                   <option v-for="module in modules" :key="module.id" :value="module.id">
                     {{ module.title }}
@@ -158,93 +154,97 @@ const showPreview = ref(false)
                 </select>
               </div>
             </div>
-          </UiCard>
 
-          <!-- Video -->
-          <UiCard>
-            <h2 class="text-lg font-medium text-slate-900 mb-4">Video</h2>
+            <!-- Editor area - main focus -->
+            <div class="flex-1 overflow-auto">
+              <div class="p-6">
+                <ClientOnly>
+                  <AdminRichTextEditor
+                    v-model="form.contentHtml"
+                    placeholder="Zacznij pisać treść lekcji..."
+                    min-height="min-h-[500px]"
+                  />
+                </ClientOnly>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <div class="space-y-4">
-              <div>
-                <UiInput
-                  v-model="form.videoUrl"
-                  label="URL video (YouTube/Vimeo)"
-                  placeholder="https://www.youtube.com/watch?v=..."
-                />
-                <div v-if="generatedIframe" class="mt-2">
-                  <button
-                    type="button"
-                    class="text-sm text-primary-600 hover:text-primary-700"
-                    @click="useGeneratedIframe"
-                  >
-                    Użyj wygenerowanego iframe
-                  </button>
-                </div>
+        <!-- Sidebar -->
+        <div class="space-y-4 overflow-y-auto">
+          <!-- Video Panel -->
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <button
+              type="button"
+              class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-slate-50 transition-colors"
+              @click="videoExpanded = !videoExpanded"
+            >
+              <div class="flex items-center gap-2">
+                <Video class="h-4 w-4 text-slate-500" />
+                <span class="font-medium text-slate-900">Video</span>
+                <span v-if="hasVideo" class="w-2 h-2 bg-green-500 rounded-full" />
+              </div>
+              <component :is="videoExpanded ? ChevronUp : ChevronDown" class="h-4 w-4 text-slate-400" />
+            </button>
+
+            <div v-show="videoExpanded" class="px-4 pb-4 space-y-4 border-t border-slate-100">
+              <!-- Tips -->
+              <div class="pt-3 pb-2 text-xs text-slate-500 bg-slate-50 -mx-4 px-4 border-b border-slate-100">
+                <p class="mb-1">Używaj <strong>YouTube</strong> lub <strong>Vimeo</strong> do hostowania video.</p>
+                <p>Wklej link, a iframe zostanie wygenerowany automatycznie.</p>
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">
-                  Kod iframe (opcjonalnie)
+                  URL video
+                </label>
+                <input
+                  v-model="form.videoUrl"
+                  type="url"
+                  placeholder="https://youtube.com/watch?v=..."
+                  class="input-base text-sm"
+                />
+                <button
+                  v-if="generatedIframe"
+                  type="button"
+                  class="mt-1.5 text-xs text-primary-600 hover:text-primary-700"
+                  @click="useGeneratedIframe"
+                >
+                  Użyj wygenerowanego iframe
+                </button>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                  Kod iframe
+                  <span class="text-slate-400 font-normal">(opcjonalnie)</span>
                 </label>
                 <textarea
                   v-model="form.videoIframe"
-                  rows="4"
-                  class="input-base font-mono text-sm"
+                  rows="3"
+                  class="input-base font-mono text-xs"
                   placeholder='<iframe src="..." ...></iframe>'
                 />
-                <p class="text-sm text-slate-500 mt-1">
-                  Własny kod iframe dla niestandardowych playerów
-                </p>
               </div>
 
               <!-- Video preview -->
-              <div v-if="form.videoIframe" class="mt-4">
+              <div v-if="form.videoIframe">
                 <button
                   type="button"
-                  class="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-2"
+                  class="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900"
                   @click="showPreview = !showPreview"
                 >
-                  <Play class="h-4 w-4" />
+                  <Play class="h-3 w-3" />
                   {{ showPreview ? 'Ukryj podgląd' : 'Pokaż podgląd' }}
                 </button>
                 <div
                   v-if="showPreview"
-                  class="aspect-video bg-slate-100 rounded-lg overflow-hidden"
+                  class="mt-2 aspect-video bg-slate-100 rounded-lg overflow-hidden"
                   v-html="form.videoIframe"
                 />
               </div>
             </div>
-          </UiCard>
-
-          <!-- Content -->
-          <UiCard>
-            <h2 class="text-lg font-medium text-slate-900 mb-4">Treść lekcji</h2>
-
-            <AdminRichTextEditor
-              v-model="form.contentHtml"
-              placeholder="Treść lekcji..."
-            />
-          </UiCard>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="space-y-6">
-          <UiCard>
-            <h3 class="text-sm font-medium text-slate-700 mb-3">Status</h3>
-            <div class="flex items-center gap-2 text-sm text-slate-600">
-              <FileText class="h-4 w-4" />
-              <span>Utworzono: {{ new Date(lesson.createdAt).toLocaleDateString('pl-PL') }}</span>
-            </div>
-          </UiCard>
-
-          <UiCard>
-            <h3 class="text-sm font-medium text-slate-700 mb-3">Wskazówki</h3>
-            <ul class="text-sm text-slate-600 space-y-2">
-              <li>• Używaj YouTube lub Vimeo do hostowania video</li>
-              <li>• Treść HTML powinna być czytelna i dobrze sformatowana</li>
-              <li>• Możesz używać nagłówków, list i obrazów</li>
-            </ul>
-          </UiCard>
+          </div>
 
           <!-- Attachments Editor -->
           <AdminAttachmentsEditor :lesson-id="lessonId" />
@@ -254,6 +254,14 @@ const showPreview = ref(false)
 
           <!-- Homework Editor -->
           <AdminHomeworkEditor :lesson-id="lessonId" />
+
+          <!-- Status info -->
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 px-4 py-3">
+            <div class="flex items-center gap-2 text-xs text-slate-500">
+              <FileText class="h-3 w-3" />
+              <span>Utworzono: {{ new Date(lesson.createdAt).toLocaleDateString('pl-PL') }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </template>
