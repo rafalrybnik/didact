@@ -59,16 +59,17 @@ model User {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  enrollments   Enrollment[]
-  progress      Progress[]
-  quizAttempts  QuizAttempt[]
-  submissions   Submission[]
-  orders        Order[]
-  posts         Post[]
-  comments      Comment[]
-  threads       Thread[]       @relation("UserThreads")
-  adminThreads  Thread[]       @relation("AdminThreads")
-  messages      Message[]
+  enrollments         Enrollment[]
+  progress            Progress[]
+  quizAttempts        QuizAttempt[]
+  submissions         Submission[]
+  orders              Order[]
+  posts               Post[]
+  comments            Comment[]
+  threads             Thread[]             @relation("UserThreads")
+  adminThreads        Thread[]             @relation("AdminThreads")
+  messages            Message[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -409,4 +410,21 @@ model Message {
   sender User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
   @@map("messages")
+}
+
+// =============================================================================
+// PasswordResetToken (for password reset flow)
+// =============================================================================
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
 }

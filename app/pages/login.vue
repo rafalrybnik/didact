@@ -68,13 +68,23 @@ async function handleSubmit() {
             required
           />
 
-          <UiInput
-            v-model="form.password"
-            type="password"
-            label="Hasło"
-            placeholder="••••••••"
-            required
-          />
+          <div>
+            <UiInput
+              v-model="form.password"
+              type="password"
+              label="Hasło"
+              placeholder="••••••••"
+              required
+            />
+            <div class="text-right mt-1">
+              <NuxtLink
+                to="/forgot-password"
+                class="text-sm text-primary-600 hover:text-primary-700"
+              >
+                Nie pamiętasz hasła?
+              </NuxtLink>
+            </div>
+          </div>
 
           <p v-if="error" class="text-sm text-red-600">
             {{ error }}
