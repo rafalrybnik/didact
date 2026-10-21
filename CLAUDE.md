@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+Product and reuse context in the Vault: `01-projects/Freelance/katalog-uslug.md` (Didact LMS). This is the original LMS repository; the separate course storefront is `~/Developer/pracownia-kursy`. Technical decisions remain in this repository's `docs/`; a Vault entry about a technical decision should contain a link to the repository record and one sentence.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
