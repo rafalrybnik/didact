@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y python3 make g++ openssl && rm -rf /var
 
 COPY . .
 
-# Fix for oxc-parser native bindings issue
-RUN rm -rf node_modules package-lock.json && npm install
+# Keep installs reproducible and include the Linux native bindings recorded in the lockfile.
+RUN npm ci --include=optional
 
 RUN npx prisma generate
 RUN npm run build
